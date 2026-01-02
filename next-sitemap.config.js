@@ -93,12 +93,21 @@ module.exports = {
     policies: [
       {
         userAgent: '*',
-        allow: ['/', '/sitemap.xml', '/llms.txt'],
+        allow: '/',
+        disallow: [
+          '/roles/developers/',
+          '/resources/',
+          '/profile',
+          '/problems',
+          '/leaderboard',
+          '/home',
+          '/unauthorized',
+          '/authentication',
+        ],
       },
     ],
     additionalSitemaps: [
       'https://flagforge.xyz/sitemap.xml',
-      'https://flagforge.xyz/llms.txt',
     ],
   },
 };
