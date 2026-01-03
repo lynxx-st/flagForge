@@ -10,6 +10,161 @@ import sobitImage from "@/public/SobitThakuri.jpeg";
 
 import { Activity, Rocket, Target, Users, Layers, Clock } from "lucide-react";
 
+// ⚡ Bolt: Optimization
+// These constant arrays are defined outside the component to prevent them from
+// being recreated on every render. This reduces memory allocation and improves
+// rendering performance, especially since this is a large component.
+const testimonials = [
+  {
+    id: 1,
+    name: "Nirmal Dahal",
+    position: "Cofounder of Cryptogen Nepal",
+    image: nirmalImage,
+    testimonial:
+      "FlagForge provides an exceptional platform for cybersecurity professionals to validate their skills. The challenges mirror real-world attack vectors and help teams stay sharp in an ever-evolving threat landscape.",
+  },
+  {
+    id: 2,
+    name: "Sobit Thakuri",
+    position: "Information Security Officer and ISO 27001:2022 Lead Auditor",
+    image: sobitImage,
+    testimonial:
+      "I appreciate FlagForge's comprehensive approach to security training. The platform effectively bridges the gap between theoretical knowledge and practical application in cybersecurity.",
+  },
+];
+
+const categories = [
+  {
+    icon: "🌐",
+    title: "Web Exploitation",
+    description: "Master web vulnerabilities like SQL injection, XSS, CSRF, and more. Learn to identify and exploit common web application security flaws.",
+  },
+  {
+    icon: "🔐",
+    title: "Cryptography",
+    description: "Decode encrypted messages, break ciphers, and understand cryptographic algorithms. From classical to modern encryption techniques.",
+  },
+  {
+    icon: "🔍",
+    title: "Reverse Engineering",
+    description: "Analyze binaries, understand assembly code, and reverse engineer software to uncover hidden flags and vulnerabilities.",
+  },
+  {
+    icon: "🕵️",
+    title: "Forensics",
+    description: "Investigate digital artifacts, analyze memory dumps, recover hidden data, and solve mysteries through digital forensics.",
+  },
+  {
+    icon: "🎯",
+    title: "Binary Exploitation",
+    description: "Exploit buffer overflows, format string vulnerabilities, and other binary-level security issues in compiled programs.",
+  },
+  {
+    icon: "🧩",
+    title: "Miscellaneous",
+    description: "Tackle unique challenges that don't fit traditional categories. Logic puzzles, OSINT, steganography, and creative problem-solving.",
+  },
+];
+
+const features = [
+  {
+    icon: "🎓",
+    title: "Learn by Doing",
+    description: "Hands-on challenges that teach real-world cybersecurity skills through practical application.",
+  },
+  {
+    icon: "📊",
+    title: "Track Your Progress",
+    description: "Monitor your improvement with detailed statistics, solve rates, and performance analytics.",
+  },
+  {
+    icon: "🏆",
+    title: "Compete & Rank",
+    description: "Climb the leaderboard, earn points, and compete with cybersecurity enthusiasts worldwide.",
+  },
+  {
+    icon: "💡",
+    title: "Smart Hint System",
+    description: "Get unstuck with our intelligent hint system. Choose between watching ads or using points for hints.",
+  },
+  {
+    icon: "🌙",
+    title: "Dark Mode Support",
+    description: "Comfortable coding experience with full dark mode support for extended practice sessions.",
+  },
+  {
+    icon: "📱",
+    title: "Fully Responsive",
+    description: "Practice anywhere, anytime. Our platform works seamlessly on desktop, tablet, and mobile devices.",
+  },
+];
+
+const howItWorks = [
+  {
+    step: "1",
+    title: "Create Your Account",
+    description: "Sign up for free and join our community of cybersecurity enthusiasts.",
+  },
+  {
+    step: "2",
+    title: "Choose Your Challenge",
+    description: "Browse challenges across multiple categories and difficulty levels.",
+  },
+  {
+    step: "3",
+    title: "Solve & Submit",
+    description: "Work through the challenge, find the flag, and submit your solution.",
+  },
+  {
+    step: "4",
+    title: "Earn Points & Rank Up",
+    description: "Gain points for correct solutions and climb the global leaderboard.",
+  },
+];
+
+const stats = [
+  { number: "100+", label: "Challenges" },
+  { number: "1000+", label: "Active Users" },
+  { number: "6", label: "Categories" },
+  { number: "24/7", label: "Availability" },
+];
+
+const faqs = [
+  {
+    question: "Is FlagForge completely free?",
+    answer: "Yes! FlagForge is completely free to use. All challenges, features, and competitions are available at no cost. We believe in making cybersecurity education accessible to everyone.",
+  },
+  {
+    question: "Do I need prior experience in cybersecurity?",
+    answer: "No! We welcome participants of all skill levels. We have challenges ranging from beginner-friendly to advanced. Start with easier challenges and progressively work your way up as you learn.",
+  },
+  {
+    question: "How does the hint system work?",
+    answer: "When you're stuck on a challenge, you can request hints. You have two options: watch a short advertisement to get a hint for free, or use your earned points to unlock hints instantly. This system keeps the platform free while helping you learn.",
+  },
+  {
+    question: "What are CTF challenges?",
+    answer: "CTF (Capture The Flag) challenges are cybersecurity exercises where you solve problems to find hidden 'flags' - special strings that prove you've solved the challenge. They're designed to teach real-world security skills in a safe, legal environment.",
+  },
+  {
+    question: "Can I compete with others?",
+    answer: "Absolutely! FlagForge features a global leaderboard where you can see how you rank against other users. Earn points by solving challenges and climb the ranks to showcase your skills.",
+  },
+  {
+    question: "How often are new challenges added?",
+    answer: "We regularly update our platform with new challenges based on user feedback and emerging cybersecurity trends. Follow our updates to stay informed about new content.",
+  },
+  {
+    question: "What if I get stuck on a challenge?",
+    answer: "Don't worry! You can use our hint system to get guidance. Additionally, our community is active and supportive - you can discuss challenges (without spoilers) and learn from others.",
+  },
+  {
+    question: "Are the challenges based on real-world scenarios?",
+    answer: "Yes! Our challenges are designed to mirror real-world security vulnerabilities and attack vectors. This ensures that the skills you learn are directly applicable to actual cybersecurity work.",
+  },
+];
+
+
 const Hero: React.FC = () => {
   const { status } = useSession();
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -20,155 +175,7 @@ const Hero: React.FC = () => {
   // Icons for the stats section, mapped by index to preserve original data structure
   const statIcons = [Target, Users, Layers, Clock];
 
-  const testimonials = [
-    {
-      id: 1,
-      name: "Nirmal Dahal",
-      position: "Cofounder of Cryptogen Nepal",
-      image: nirmalImage,
-      testimonial:
-        "FlagForge provides an exceptional platform for cybersecurity professionals to validate their skills. The challenges mirror real-world attack vectors and help teams stay sharp in an ever-evolving threat landscape.",
-    },
-    {
-      id: 2,
-      name: "Sobit Thakuri",
-      position: "Information Security Officer and ISO 27001:2022 Lead Auditor",
-      image: sobitImage,
-      testimonial:
-        "I appreciate FlagForge's comprehensive approach to security training. The platform effectively bridges the gap between theoretical knowledge and practical application in cybersecurity.",
-    },
-  ];
 
-  const categories = [
-    {
-      icon: "🌐",
-      title: "Web Exploitation",
-      description: "Master web vulnerabilities like SQL injection, XSS, CSRF, and more. Learn to identify and exploit common web application security flaws.",
-    },
-    {
-      icon: "🔐",
-      title: "Cryptography",
-      description: "Decode encrypted messages, break ciphers, and understand cryptographic algorithms. From classical to modern encryption techniques.",
-    },
-    {
-      icon: "🔍",
-      title: "Reverse Engineering",
-      description: "Analyze binaries, understand assembly code, and reverse engineer software to uncover hidden flags and vulnerabilities.",
-    },
-    {
-      icon: "🕵️",
-      title: "Forensics",
-      description: "Investigate digital artifacts, analyze memory dumps, recover hidden data, and solve mysteries through digital forensics.",
-    },
-    {
-      icon: "🎯",
-      title: "Binary Exploitation",
-      description: "Exploit buffer overflows, format string vulnerabilities, and other binary-level security issues in compiled programs.",
-    },
-    {
-      icon: "🧩",
-      title: "Miscellaneous",
-      description: "Tackle unique challenges that don't fit traditional categories. Logic puzzles, OSINT, steganography, and creative problem-solving.",
-    },
-  ];
-
-  const features = [
-    {
-      icon: "🎓",
-      title: "Learn by Doing",
-      description: "Hands-on challenges that teach real-world cybersecurity skills through practical application.",
-    },
-    {
-      icon: "📊",
-      title: "Track Your Progress",
-      description: "Monitor your improvement with detailed statistics, solve rates, and performance analytics.",
-    },
-    {
-      icon: "🏆",
-      title: "Compete & Rank",
-      description: "Climb the leaderboard, earn points, and compete with cybersecurity enthusiasts worldwide.",
-    },
-    {
-      icon: "💡",
-      title: "Smart Hint System",
-      description: "Get unstuck with our intelligent hint system. Choose between watching ads or using points for hints.",
-    },
-    {
-      icon: "🌙",
-      title: "Dark Mode Support",
-      description: "Comfortable coding experience with full dark mode support for extended practice sessions.",
-    },
-    {
-      icon: "📱",
-      title: "Fully Responsive",
-      description: "Practice anywhere, anytime. Our platform works seamlessly on desktop, tablet, and mobile devices.",
-    },
-  ];
-
-  const howItWorks = [
-    {
-      step: "1",
-      title: "Create Your Account",
-      description: "Sign up for free and join our community of cybersecurity enthusiasts.",
-    },
-    {
-      step: "2",
-      title: "Choose Your Challenge",
-      description: "Browse challenges across multiple categories and difficulty levels.",
-    },
-    {
-      step: "3",
-      title: "Solve & Submit",
-      description: "Work through the challenge, find the flag, and submit your solution.",
-    },
-    {
-      step: "4",
-      title: "Earn Points & Rank Up",
-      description: "Gain points for correct solutions and climb the global leaderboard.",
-    },
-  ];
-
-  const stats = [
-    { number: "100+", label: "Challenges" },
-    { number: "1000+", label: "Active Users" },
-    { number: "6", label: "Categories" },
-    { number: "24/7", label: "Availability" },
-  ];
-
-  const faqs = [
-    {
-      question: "Is FlagForge completely free?",
-      answer: "Yes! FlagForge is completely free to use. All challenges, features, and competitions are available at no cost. We believe in making cybersecurity education accessible to everyone.",
-    },
-    {
-      question: "Do I need prior experience in cybersecurity?",
-      answer: "No! We welcome participants of all skill levels. We have challenges ranging from beginner-friendly to advanced. Start with easier challenges and progressively work your way up as you learn.",
-    },
-    {
-      question: "How does the hint system work?",
-      answer: "When you're stuck on a challenge, you can request hints. You have two options: watch a short advertisement to get a hint for free, or use your earned points to unlock hints instantly. This system keeps the platform free while helping you learn.",
-    },
-    {
-      question: "What are CTF challenges?",
-      answer: "CTF (Capture The Flag) challenges are cybersecurity exercises where you solve problems to find hidden 'flags' - special strings that prove you've solved the challenge. They're designed to teach real-world security skills in a safe, legal environment.",
-    },
-    {
-      question: "Can I compete with others?",
-      answer: "Absolutely! FlagForge features a global leaderboard where you can see how you rank against other users. Earn points by solving challenges and climb the ranks to showcase your skills.",
-    },
-    {
-      question: "How often are new challenges added?",
-      answer: "We regularly update our platform with new challenges based on user feedback and emerging cybersecurity trends. Follow our updates to stay informed about new content.",
-    },
-    {
-      question: "What if I get stuck on a challenge?",
-      answer: "Don't worry! You can use our hint system to get guidance. Additionally, our community is active and supportive - you can discuss challenges (without spoilers) and learn from others.",
-    },
-    {
-      question: "Are the challenges based on real-world scenarios?",
-      answer: "Yes! Our challenges are designed to mirror real-world security vulnerabilities and attack vectors. This ensures that the skills you learn are directly applicable to actual cybersecurity work.",
-    },
-  ];
 
   const changeTestimonial = (newIndex: number) => {
     if (newIndex === currentTestimonial || isAnimating) return;
