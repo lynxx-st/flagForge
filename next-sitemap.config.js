@@ -96,19 +96,13 @@ module.exports = {
     policies: [
       {
         userAgent: '*',
-        disallow: [],
+        disallow: SITEMAP_EXCLUDE,
       },
     ],
-    transformRobotsTxt: async (config) => {
-      const lines = [
-        'User-agent: *',
-        'Disallow:',
-        '',
-        `Sitemap: ${config.siteUrl}/sitemap.xml`,
-        '',
-      ];
-
-      return lines.join('\n');
+    transformRobotsTxt: async (config, robotsTxt) => {
+      return (
+        robotsTxt + `\nSitemap: ${config.siteUrl}/sitemap.xml`
+      );
     },
   },
 };

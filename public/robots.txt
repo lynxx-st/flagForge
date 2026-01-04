@@ -1,4 +1,17 @@
+# *
 User-agent: *
-Disallow:
+Disallow: /roles/developers/*
+Disallow: /roles/developers
+Disallow: /resources/*
+Disallow: /resources
+Disallow: /profile
+Disallow: /problems
+Disallow: /leaderboard
+Disallow: /home
+Disallow: /unauthorized
+Disallow: /authentication
+
+# Host
+Host: https://flagforge.xyz
 
 Sitemap: https://flagforge.xyz/sitemap.xml
