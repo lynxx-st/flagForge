@@ -80,7 +80,9 @@ const Home = () => {
 
   const fetchLatestRoom = async () => {
     try {
-      const response = await fetch("/api/problems?limit=400");
+      // ⚡ Bolt: Fetch only the latest problem instead of a large list.
+      // This reduces the payload size and processing time on both client and server.
+      const response = await fetch("/api/problems?page=1&limit=1");
 
       if (response.ok) {
         const data = await response.json();
