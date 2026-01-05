@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import type { Metadata, Viewport } from "next";
 import { DM_Sans } from "next/font/google";
 import Script from "next/script";
@@ -134,10 +135,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const nonce = headers().get("x-nonce") || "";
+
   return (
     <html lang="en">
       <head>
         <script
+          nonce={nonce}
           id="structured-data"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -146,7 +150,13 @@ export default function RootLayout({
       <body
         className={`${dmSans.className} antialiased transition-colors duration-300 bg-white dark:bg-gray-900 overflow-x-hidden sm:overflow-x-visible`}
       >
-        <ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+          nonce={nonce}
+        >
           <Authprovider>
             <div className="mx-auto grid min-h-[100dvh] grid-rows-[auto_1fr_auto]">
               <Navbar />
@@ -158,6 +168,7 @@ export default function RootLayout({
           </Authprovider>
         </ThemeProvider>
         <Script
+          nonce={nonce}
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2506540900080142"
           crossOrigin="anonymous"
