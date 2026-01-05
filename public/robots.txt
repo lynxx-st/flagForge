@@ -1,8 +1,18 @@
+# *
 User-agent: *
-Allow: /
-Allow: /llms.txt
-Disallow:
+Disallow: /roles/developers/*
+Disallow: /roles/developers
+Disallow: /resources/*
+Disallow: /resources
+Disallow: /profile
+Disallow: /problems
+Disallow: /leaderboard
+Disallow: /home
+Disallow: /unauthorized
+Disallow: /authentication
 
+# Host
+Host: https://flagforge.xyz
+
+# Sitemaps
 Sitemap: https://flagforge.xyz/sitemap.xml
-Sitemap: https://flagforge.xyz/sitemap1.xml
-Sitemap: https://flagforge.xyz/sitemap.txt

@@ -197,23 +197,11 @@ module.exports = {
     policies: [
       {
         userAgent: '*',
-        disallow: [],
+        disallow: SITEMAP_EXCLUDE,
       },
     ],
-    transformRobotsTxt: async (config) => {
-      const lines = [
-        'User-agent: *',
-        'Allow: /',
-        'Allow: /llms.txt',
-        'Disallow:',
-        '',
-        `Sitemap: ${config.siteUrl}/sitemap.xml`,
-        `Sitemap: ${config.siteUrl}/sitemap1.xml`,
-        `Sitemap: ${config.siteUrl}/sitemap.txt`,
-        '',
-      ];
-
-      return lines.join('\n');
-    },
+    additionalSitemaps: [
+      'https://flagforge.xyz/sitemap.xml',
+    ],
   },
 };
