@@ -9,6 +9,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      variants: {
+        extend: {
+          opacity: ["aria-disabled"],
+          cursor: ["aria-disabled"],
+        },
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
