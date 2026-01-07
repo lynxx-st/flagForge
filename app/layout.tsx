@@ -8,7 +8,7 @@ import CookieConsent from "@/components/CookieConsent";
 import Authprovider from "@/providers/auth-provider";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { Analytics } from "@vercel/analytics/react";
-
+import { headers } from "next/headers";
 const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap",
@@ -126,11 +126,12 @@ const structuredData = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const nonce = (await headers()).get("x-nonce") ?? "";
   return (
     <html lang="en">
       <head>
@@ -138,6 +139,7 @@ export default function RootLayout({
           id="structured-data"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          nonce={nonce}
         />
       </head>
       <body
@@ -148,7 +150,7 @@ export default function RootLayout({
             <div className="mx-auto grid min-h-[100dvh] grid-rows-[auto_1fr_auto]">
               <Navbar />
               <main className="flex-1">{children}</main>
-              {typeof window !== "undefined" && <Analytics />}
+              <Analytics nonce={nonce} />
               <CookieConsent />
               <Footer />
             </div>
@@ -159,6 +161,7 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2506540900080142"
           crossOrigin="anonymous"
           strategy="afterInteractive"
+          nonce={nonce}
         />
       </body>
     </html>
