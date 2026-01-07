@@ -78,8 +78,11 @@ export async function GET(request: NextRequest) {
   const page: number = qpage;
 
   // Allow custom limit from query params, default to 8 for normal pagination
-  const requestedLimit = searchParams.get("limit");
-  const limit = requestedLimit ? parseInt(requestedLimit, 10) : 8;
+  // 🛡️ Sentinel: Cap the limit to prevent DoS attacks and handle invalid input.
+  // A very large or invalid limit could overload the database.
+  // Number() handles empty strings and nulls gracefully (evaluating to 0),
+  // the `|| 8` ensures a default, and Math.min caps the value.
+  const limit = Math.min(Number(searchParams.get("limit")) || 8, 100);
 
   // Get category filter from query params
   const category = searchParams.get("category");
@@ -108,10 +111,8 @@ export async function GET(request: NextRequest) {
     // Add sorting - newest first by default
     query = query.sort({ createdAt: -1 });
 
-    // Apply pagination only if limit is reasonable (not trying to get all)
-    if (limit <= 1000) {
-      query = query.skip(startIndex).limit(limit);
-    }
+    // Apply pagination
+    query = query.skip(startIndex).limit(limit);
 
     const questions = await query.exec();
 
