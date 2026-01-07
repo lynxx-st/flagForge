@@ -79,7 +79,9 @@ const Home = () => {
 
   const fetchLatestRoom = async () => {
     try {
-      const response = await fetch("/api/problems?limit=400");
+      // ⚡ Bolt: Optimized to fetch only the single latest room instead of 400.
+      // This significantly reduces the data transfer and improves the home page load time.
+      const response = await fetch("/api/problems?limit=1");
 
       if (response.ok) {
         const data = await response.json();
