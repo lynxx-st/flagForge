@@ -21,6 +21,7 @@ import {
   Lock,
   Terminal,
   Target,
+  X,
   ExternalLink
 } from "lucide-react";
 import Newbie from "../../../public/badges/0x1.png";
@@ -1179,9 +1180,10 @@ const ProfilePage = () => {
                 </div>
                 <button
                   onClick={() => setShowShareModal(false)}
+                  aria-label="Close"
                   className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors"
                 >
-                  <Shield className="w-4 h-4 text-gray-400" />
+                  <X className="w-4 h-4 text-gray-400" />
                 </button>
               </div>
 
@@ -1255,7 +1257,7 @@ const ProfilePage = () => {
                   onClick={() => setShowShareModal(false)}
                   className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-opacity mt-2"
                 >
-                  Protocol Terminated
+                  Done
                 </button>
               </div>
             </div>
