@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { DM_Sans } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
@@ -126,11 +127,13 @@ const structuredData = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const nonce = headers().get("x-nonce") || "";
+
   return (
     <html lang="en">
       <head>
@@ -138,6 +141,7 @@ export default function RootLayout({
           id="structured-data"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          nonce={nonce}
         />
       </head>
       <body
@@ -148,7 +152,7 @@ export default function RootLayout({
             <div className="mx-auto grid min-h-[100dvh] grid-rows-[auto_1fr_auto]">
               <Navbar />
               <main className="flex-1">{children}</main>
-              {typeof window !== "undefined" && <Analytics />}
+              <Analytics nonce={nonce} />
               <CookieConsent />
               <Footer />
             </div>
@@ -159,6 +163,7 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2506540900080142"
           crossOrigin="anonymous"
           strategy="afterInteractive"
+          nonce={nonce}
         />
       </body>
     </html>
