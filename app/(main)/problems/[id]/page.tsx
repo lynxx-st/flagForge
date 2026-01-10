@@ -377,12 +377,14 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
           setTimeout(() => setIsDone(true), 5000);
           setTimeout(() => router.push("/problems"), 8000);
         } else {
+          setFlag("");
           setTimeout(
             () => (lastSubmittedFlag.current = ""),
             MIN_SUBMISSION_INTERVAL
           );
         }
       } else {
+        setFlag("");
         setMessage(result.message || "An error occurred");
         setTimeout(
           () => (lastSubmittedFlag.current = ""),
