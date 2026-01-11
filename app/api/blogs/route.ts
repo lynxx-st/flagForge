@@ -8,18 +8,10 @@ export async function GET() {
     const apiKey = process.env.NOTION_API_KEY;
     const databaseId = process.env.NOTION_DATABASE_ID;
 
-    if (!apiKey) {
-      console.error('NOTION_API_KEY is not set');
+    if (!apiKey || !databaseId) {
+      console.error('Notion API key or database ID is not set');
       return NextResponse.json(
-        { error: 'NOTION_API_KEY is not configured' },
-        { status: 500 }
-      );
-    }
-
-    if (!databaseId) {
-      console.error('NOTION_DATABASE_ID is not set');
-      return NextResponse.json(
-        { error: 'NOTION_DATABASE_ID is not configured' },
+        { error: 'Notion integration is not configured' },
         { status: 500 }
       );
     }
