@@ -79,7 +79,9 @@ const Home = () => {
 
   const fetchLatestRoom = async () => {
     try {
-      const response = await fetch("/api/problems?limit=400");
+      // Fetches the latest problem to display on the home page.
+      // Limiting to 1 significantly improves performance by reducing payload size.
+      const response = await fetch("/api/problems?limit=1");
 
       if (response.ok) {
         const data = await response.json();
