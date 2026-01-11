@@ -3,7 +3,13 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import QustionCards from "@/components/QustionCards";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
-import { IoFilter, IoChevronDown, IoSearch } from "react-icons/io5";
+import {
+  IoFilter,
+  IoChevronDown,
+  IoSearch,
+  IoChevronBack,
+  IoChevronForward,
+} from "react-icons/io5";
 import { useSession } from "next-auth/react";
 import { Questions } from "@/interfaces";
 
@@ -456,22 +462,24 @@ const PaginationControls: React.FC<{
     <button
       onClick={onPrevious}
       disabled={currentPage === 1}
-      className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${currentPage === 1
+      className={`inline-flex items-center gap-2 font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${currentPage === 1
           ? "bg-gray-300 text-gray-500 cursor-not-allowed"
           : "bg-red-500/90 hover:bg-red-600"
         }`}
     >
+      <IoChevronBack className="text-lg" aria-hidden="true" />
       Previous
     </button>
     <button
       onClick={onNext}
       disabled={!hasNextPage}
-      className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${!hasNextPage
+      className={`inline-flex items-center gap-2 font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${!hasNextPage
           ? "bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed"
           : "bg-red-500/90 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600"
         }`}
     >
       Next
+      <IoChevronForward className="text-lg" aria-hidden="true" />
     </button>
   </div>
 );
