@@ -87,7 +87,8 @@ const nextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "geolocation=(), microphone=(), camera=(), payment=()",
+            value:
+              "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), autoplay=(), encrypted-media=(), picture-in-picture=(), display-capture=()",
           },
           {
             key: "Cache-Control",
