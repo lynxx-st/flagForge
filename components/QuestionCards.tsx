@@ -51,4 +51,8 @@ const QuestionCards = ({
   );
 };
 
-export default QuestionCards;
+// ⚡ Bolt: Memoizing QuestionCards to prevent unnecessary re-renders.
+// This is crucial for performance on pages with many cards, as it avoids
+// re-calculating the `isDone` status and re-rendering the component
+// when parent components update but this card's props remain unchanged.
+export default React.memo(QuestionCards);
