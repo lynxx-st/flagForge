@@ -8,7 +8,7 @@ import { ArrowLeft, ArrowUp, ChevronRight, Sparkles, Tag } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-import rehypeSanitize from "rehype-sanitize";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import Loading from "@/components/loading";
 
 // Types
@@ -325,12 +325,31 @@ export default function BlogPostClient({
           "\n\n*[Content truncated for security]*"
         : content;
 
+    const customSchema = {
+      ...defaultSchema,
+      attributes: {
+        ...defaultSchema.attributes,
+        code: [
+          ...(defaultSchema.attributes?.code || []),
+          ["className", /^language-./],
+        ],
+        span: [
+          ...(defaultSchema.attributes?.span || []),
+          ["className", /^hljs-/],
+        ],
+        pre: [
+          ...(defaultSchema.attributes?.pre || []),
+          ["className", "hljs"],
+        ]
+      },
+    };
+
     return (
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[
           rehypeHighlight, // Syntax highlighting for code blocks
-          rehypeSanitize, // Sanitizes HTML to prevent XSS
+          [rehypeSanitize, customSchema], // Sanitizes HTML to prevent XSS
         ]}
         components={{
           // Custom component styling
