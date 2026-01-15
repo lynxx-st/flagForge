@@ -1,5 +1,5 @@
-## 2024-07-25 - Provide Immediate Feedback for Invalid User Actions
+## 2024-07-22 - Use Native `disabled` Attribute Over `aria-disabled` for Buttons
 
-**Learning:** When a user action cannot be completed (e.g., submitting a form), the system must provide immediate, clear, and actionable feedback. Silently blocking an action, even with client-side validation, creates a confusing and frustrating user experience. Users are left wondering if the system is broken or if they did something wrong.
+**Learning:** For native `<button>` elements, using the HTML `disabled` attribute is the semantically correct and more accessible pattern compared to `aria-disabled`. The `disabled` attribute natively prevents `onClick` events and removes the element from the tab order, which is the expected behavior for assistive technologies. `aria-disabled="true"` only communicates the disabled state to screen readers but does not prevent interaction, requiring extra JavaScript to block clicks.
 
-**Action:** In any form or user input flow, always connect client-side validation logic directly to the UI. If a check fails, display a descriptive, temporary message that explains *why* the action was blocked and what the user should do next. This transforms a moment of friction into a moment of guidance, improving user confidence and flow.
+**Action:** In the future, when disabling interactive elements like buttons, always prefer the native `disabled` attribute. Use `aria-disabled` only for custom components or elements that don't support the `disabled` attribute, and ensure the interaction is programmatically disabled. For styling, use CSS pseudo-classes like `:disabled` or, in Tailwind, the `disabled:` variant for a cleaner implementation.
