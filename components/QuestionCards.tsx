@@ -18,7 +18,7 @@ const QuestionCards = ({
   return (
     <Link
       href={`/problems/${_id}`}
-      className={`relative w-full h-full bg-white/40 dark:bg-gray-800 backdrop-blur-[150px] mx-auto my-0 flex flex-col gap-4 shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50 px-6 py-5 rounded-2xl z-2 hover:bg-gray-100/70 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors duration-300 ${
+      className={`group relative w-full h-full bg-white/40 dark:bg-gray-800 backdrop-blur-[150px] mx-auto my-0 flex flex-col gap-4 shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50 px-6 py-5 rounded-2xl z-2 hover:bg-gray-100/70 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors duration-300 ${
         isDone ? "border-green-400 dark:border-green-500/80" : ""
       }`}
     >
@@ -29,7 +29,7 @@ const QuestionCards = ({
         </div>
       )}
       <div className="flex flex-col">
-        <h1 className="text-[1.5rem] text-start font-bold tracking-tight line-clamp-2 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+        <h1 className="text-[1.5rem] text-start font-bold tracking-tight line-clamp-2 text-gray-900 dark:text-gray-100 transition-colors duration-300 group-hover:text-blue-500">
           {title}
         </h1>
         <div className="flex flex-col gap-2 justify-between">
@@ -45,7 +45,7 @@ const QuestionCards = ({
       </div>
       <h3 className="font-base font-[0.5rem] text-black dark:text-gray-200 line-clamp-2 transition-colors duration-300">
         {description}...{" "}
-        <span className="text-red-500 dark:text-red-400 font-bold">more</span>
+        <span>more</span>
       </h3>
     </Link>
   );
