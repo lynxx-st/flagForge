@@ -342,12 +342,14 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     ]);
 
   const handleSubmit = async () => {
+    setSubmitting(true);
     const submissionCheck = canSubmit();
     if (!submissionCheck.allowed) {
       if (submissionCheck.reason) {
         setMessage(submissionCheck.reason);
         setTimeout(() => setMessage(null), 3000);
       }
+      setSubmitting(false);
       return;
     }
 
@@ -356,7 +358,6 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     }
 
     try {
-      setSubmitting(true);
       submissionInProgress.current = true;
       const now = Date.now();
       const flagTrimmed = flag.trim();
@@ -494,6 +495,14 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
 
   const isSubmissionLocked =
     submitting || isExpired || (!isPracticeMode && isCorrect);
+
+  const getButtonText = () => {
+    if (submitting) return "Submitting...";
+    if (isExpired) return "Expired";
+    if (isCorrect && !isPracticeMode) return "Solved!";
+    if (isPracticeMode) return "Submit (Practice)";
+    return "Submit";
+  };
 
   if (loading || sessionStatus === "loading") return <Loading />;
   if (sessionStatus === "unauthenticated") return <AuthError />;
@@ -1017,16 +1026,9 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                     } ${submitting ? "animate-pulse" : ""}`}
                   onClick={handleSubmit}
                   disabled={isSubmissionLocked}
+                  aria-busy={submitting}
                 >
-                  {submitting
-                    ? "Submitting..."
-                    : isExpired
-                      ? "Expired"
-                      : isCorrect && !isPracticeMode
-                        ? "Solved!"
-                        : isPracticeMode
-                          ? "Submit (Practice)"
-                          : "Submit"}
+                  {getButtonText()}
                 </button>
 
                 {/* Time remaining display */}
