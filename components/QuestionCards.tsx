@@ -51,4 +51,6 @@ const QuestionCards = ({
   );
 };
 
-export default QuestionCards;
+// Memoizing QuestionCards to prevent unnecessary re-renders of the component
+// when parent components re-render, optimizing performance for lists.
+export default React.memo(QuestionCards);
