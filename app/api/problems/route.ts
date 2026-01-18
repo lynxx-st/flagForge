@@ -11,6 +11,11 @@ import { sendDiscordNotification } from "@/utils/discordNotifier";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+// Sanitize user input for regex
+const escapeRegex = (string: string) => {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
 export async function POST(req: NextRequest) {
   try {
     await connect();
@@ -83,6 +88,7 @@ export async function GET(request: NextRequest) {
 
   // Get category filter from query params
   const category = searchParams.get("category");
+  const searchQuery = searchParams.get("search");
 
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
@@ -95,11 +101,21 @@ export async function GET(request: NextRequest) {
     await connect();
 
     // Build the base query - exclude flag
-    let baseQuery = {};
+    let baseQuery: any = {};
 
     // Add category filter if provided and not "All"
     if (category && category !== "All") {
-      baseQuery = { category: category };
+      baseQuery.category = category;
+    }
+
+    // Add search query filter if provided
+    if (searchQuery) {
+      const sanitizedQuery = escapeRegex(searchQuery);
+      baseQuery.$or = [
+        { title: { $regex: sanitizedQuery, $options: "i" } },
+        { description: { $regex: sanitizedQuery, $options: "i" } },
+        { category: { $regex: sanitizedQuery, $options: "i" } },
+      ];
     }
 
     // Build the query with category filter
