@@ -97,10 +97,6 @@ const nextConfig = {
             key: "Pragma",
             value: "no-cache",
           },
-          {
-            key: "Server",
-            value: "",
-          },
         ],
       },
       {
