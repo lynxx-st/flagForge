@@ -399,7 +399,6 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
             setTimeout(() => setShowConfetti(false), 3000);
             setFlag("");
             setTimeout(() => setIsDone(true), 5000);
-            setTimeout(() => router.push("/problems"), 8000);
           } else {
             setFlag("");
             lastSubmittedFlag.current = "";
