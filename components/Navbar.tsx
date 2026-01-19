@@ -174,7 +174,9 @@ const Navbar: React.FC = () => {
             <button
               onClick={toggleTheme}
               className="p-2.5 rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-300 active:scale-90"
-              aria-label="Toggle dark mode"
+              aria-label={
+                theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+              }
             >
               <div className="relative h-5 w-5">
                 <SunIcon
@@ -257,7 +259,9 @@ const Navbar: React.FC = () => {
           <button
             onClick={toggleTheme}
             className="p-2.5 rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-300 active:scale-90"
-            aria-label="Toggle dark mode"
+            aria-label={
+              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+            }
           >
             <div className="relative h-6 w-6">
               <SunIcon
