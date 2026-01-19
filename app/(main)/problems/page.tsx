@@ -113,6 +113,7 @@ const useCategories = () => {
 const useProblems = (
   currentPage: number,
   selectedCategory: string,
+  searchQuery: string,
   categoriesLoading: boolean
 ) => {
   const [problems, setProblems] = useState<QuestionWithExpiry[]>([]);
@@ -131,6 +132,11 @@ const useProblems = (
       let apiUrl = `/api/problems?page=${currentPage}`;
       if (selectedCategory && selectedCategory !== "All") {
         apiUrl += `&category=${encodeURIComponent(selectedCategory)}`;
+      }
+      // ✨ OPTIMIZATION: Delegate search to the backend API
+      const trimmedQuery = searchQuery.trim();
+      if (trimmedQuery) {
+        apiUrl += `&search=${encodeURIComponent(trimmedQuery)}`;
       }
 
       const response = await fetch(apiUrl);
@@ -175,7 +181,7 @@ const useProblems = (
     } finally {
       setLoading(false);
     }
-  }, [currentPage, selectedCategory]);
+  }, [currentPage, selectedCategory, searchQuery]);
 
   useEffect(() => {
     if (!categoriesLoading) {
@@ -489,8 +495,10 @@ const Page: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<QuestionWithExpiry[]>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
+  // No longer need separate search results, the main `problems` list will be the source of truth
+  // const [searchResults, setSearchResults] = useState<QuestionWithExpiry[]>([]);
+  // Loading state is now unified in the `useProblems` hook
+  // const [searchLoading, setSearchLoading] = useState(false);
 
   const { categories, loading: categoriesLoading } = useCategories();
   const {
@@ -502,90 +510,17 @@ const Page: React.FC = () => {
     hasNextPage,
     totalPages,
     errorMessage,
-  } = useProblems(currentPage, selectedCategory, categoriesLoading);
+  } = useProblems(currentPage, selectedCategory, searchQuery, categoriesLoading);
 
-  const fetchAllProblems = useCallback(
-    async (category: string) => {
-      let page = 1;
-      let hasNext = true;
-      const allProblems: QuestionWithExpiry[] = [];
-
-      while (hasNext) {
-        let apiUrl = `/api/problems?page=${page}&limit=1000`;
-        if (category && category !== "All") {
-          apiUrl += `&category=${encodeURIComponent(category)}`;
-        }
-
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-          throw new Error("Failed to fetch problems");
-        }
-
-        const { data, pagination }: ApiResponse = await response.json();
-        const sanitizedData = sanitizeProblems(data);
-        allProblems.push(...sanitizedData);
-
-        hasNext = Boolean(pagination?.hasNext);
-        page += 1;
-
-        if (!pagination || data.length === 0) {
-          hasNext = false;
-        }
-      }
-
-      return allProblems;
-    },
-    []
-  );
-
-  useEffect(() => {
-    const query = searchQuery.trim();
-    if (!query) {
-      setSearchResults([]);
-      setSearchLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    const timer = setTimeout(async () => {
-      setSearchLoading(true);
-      try {
-        const allProblems = await fetchAllProblems(selectedCategory);
-        if (cancelled) return;
-        const normalizedQuery = query.toLowerCase();
-        const filtered = allProblems.filter((problem) => {
-          const title = problem.title?.toLowerCase() || "";
-          const description = problem.description?.toLowerCase() || "";
-          const category = problem.category?.toLowerCase() || "";
-          return (
-            title.includes(normalizedQuery) ||
-            description.includes(normalizedQuery) ||
-            category.includes(normalizedQuery)
-          );
-        });
-        setSearchResults(filtered);
-      } catch (error) {
-        if (!cancelled) {
-          console.error("Failed to search problems:", error);
-          setSearchResults([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setSearchLoading(false);
-        }
-      }
-    }, 300);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [fetchAllProblems, searchQuery, selectedCategory]);
+  // ❌ REMOVED: Inefficient client-side search logic.
+  // The `fetchAllProblems` and the large `useEffect` block have been removed.
+  // Search is now handled efficiently by the `useProblems` hook, which passes the query to the backend.
 
   const isSearchActive = searchQuery.trim().length > 0;
-  const visibleProblems = isSearchActive ? searchResults : problems;
+  // The `problems` array is now the single source of truth for display.
+  const visibleProblems = problems;
   const shouldShowNoProblems =
-    visibleProblems.length === 0 && !searchLoading;
+    visibleProblems.length === 0 && !problemsLoading;
 
   // Handle category filter change
   const handleCategoryChange = useCallback((category: string) => {
@@ -673,7 +608,7 @@ const Page: React.FC = () => {
         <SearchBar
           value={searchQuery}
           onChange={setSearchQuery}
-          loading={searchLoading}
+          loading={problemsLoading && isSearchActive}
         />
 
         <DesktopFilter
@@ -697,7 +632,7 @@ const Page: React.FC = () => {
           currentPage={currentPage}
           totalPages={totalPages}
           searchQuery={searchQuery}
-          isSearching={searchLoading}
+          isSearching={problemsLoading && isSearchActive}
         />
       </div>
 

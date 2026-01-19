@@ -72,6 +72,11 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// Helper function to escape special regex characters to prevent ReDoS attacks
+const escapeRegex = (string: string) => {
+  return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+};
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const qpage = parseInt(searchParams.get("page") ?? "1", 10);
@@ -81,8 +86,9 @@ export async function GET(request: NextRequest) {
   const requestedLimit = searchParams.get("limit");
   const limit = requestedLimit ? parseInt(requestedLimit, 10) : 8;
 
-  // Get category filter from query params
+  // Get category and search filters from query params
   const category = searchParams.get("category");
+  const search = searchParams.get("search");
 
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
@@ -94,15 +100,33 @@ export async function GET(request: NextRequest) {
   try {
     await connect();
 
-    // Build the base query - exclude flag
-    let baseQuery = {};
+    // Build the base query object dynamically
+    const queryParts = [];
 
     // Add category filter if provided and not "All"
     if (category && category !== "All") {
-      baseQuery = { category: category };
+      queryParts.push({ category });
     }
 
-    // Build the query with category filter
+    // Add search filter if provided
+    if (search) {
+      // Sanitize search input to prevent ReDoS vulnerability
+      const sanitizedSearch = escapeRegex(search.trim());
+      if (sanitizedSearch) {
+        queryParts.push({
+          $or: [
+            { title: { $regex: sanitizedSearch, $options: "i" } },
+            { description: { $regex: sanitizedSearch, $options: "i" } },
+            { category: { $regex: sanitizedSearch, $options: "i" } },
+          ],
+        });
+      }
+    }
+
+    // Combine query parts if any exist
+    const baseQuery = queryParts.length > 0 ? { $and: queryParts } : {};
+
+    // Build the query with the combined filters
     let query = QuestionModel.find(baseQuery).select("-flag");
 
     // Add sorting - newest first by default
