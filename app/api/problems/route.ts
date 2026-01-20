@@ -11,6 +11,11 @@ import { sendDiscordNotification } from "@/utils/discordNotifier";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+// Helper function to escape special characters for regex
+const escapeRegex = (text: string) => {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
 export async function POST(req: NextRequest) {
   try {
     await connect();
@@ -83,6 +88,8 @@ export async function GET(request: NextRequest) {
 
   // Get category filter from query params
   const category = searchParams.get("category");
+  // Get search query from query params
+  const search = searchParams.get("search");
 
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
@@ -94,15 +101,32 @@ export async function GET(request: NextRequest) {
   try {
     await connect();
 
-    // Build the base query - exclude flag
-    let baseQuery = {};
+    // Build the base query - an array of conditions to be joined with $and
+    const queryConditions: any[] = [];
 
     // Add category filter if provided and not "All"
     if (category && category !== "All") {
-      baseQuery = { category: category };
+      queryConditions.push({ category: category });
     }
 
-    // Build the query with category filter
+    // Add search query filter if provided
+    if (search) {
+      const sanitizedSearch = escapeRegex(search.trim());
+      const searchRegex = { $regex: sanitizedSearch, $options: "i" }; // "i" for case-insensitivity
+      queryConditions.push({
+        $or: [
+          { title: searchRegex },
+          { description: searchRegex },
+          { category: searchRegex },
+        ],
+      });
+    }
+
+    // Combine conditions with $and, or use an empty query if no conditions
+    const baseQuery =
+      queryConditions.length > 0 ? { $and: queryConditions } : {};
+
+    // Build the query with the combined filters
     let query = QuestionModel.find(baseQuery).select("-flag");
 
     // Add sorting - newest first by default
