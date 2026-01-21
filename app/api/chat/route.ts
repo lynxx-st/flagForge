@@ -8,7 +8,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import mongoose from "mongoose";
 
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "YOUR_KEY_HERE";
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
 // Schema for chat hint tracking
 const chatHintSchema = new mongoose.Schema({
@@ -66,6 +66,13 @@ function calculateChatHintPenalty(previousHints: number): number {
 }
 
 export async function POST(req: NextRequest) {
+  if (!OPENROUTER_API_KEY) {
+    console.error("OPENROUTER_API_KEY is not set.");
+    return NextResponse.json(
+      { reply: "The chat assistant is not configured." },
+      { status: 500 }
+    );
+  }
   try {
     const { message, challengeId, userId, hintLevel } = await req.json();
 
