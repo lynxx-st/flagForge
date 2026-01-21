@@ -83,6 +83,7 @@ export async function GET(request: NextRequest) {
 
   // Get category filter from query params
   const category = searchParams.get("category");
+  const search = searchParams.get("search");
 
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
@@ -94,13 +95,32 @@ export async function GET(request: NextRequest) {
   try {
     await connect();
 
-    // Build the base query - exclude flag
-    let baseQuery = {};
+    // Build the base query
+    const queryConditions: any[] = [];
 
     // Add category filter if provided and not "All"
     if (category && category !== "All") {
-      baseQuery = { category: category };
+      queryConditions.push({ category: category });
     }
+    // Add search filter if provided
+    if (search) {
+      const searchRegex = new RegExp(
+        // Escape special characters for regex
+        search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"),
+        "i"
+      );
+      queryConditions.push({
+        $or: [
+          { title: { $regex: searchRegex } },
+          { description: { $regex: searchRegex } },
+          { category: { $regex: searchRegex } },
+        ],
+      });
+    }
+
+    const baseQuery = queryConditions.length
+      ? { $and: queryConditions }
+      : {};
 
     // Build the query with category filter
     let query = QuestionModel.find(baseQuery).select("-flag");
