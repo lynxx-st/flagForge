@@ -8,8 +8,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import UserQuestionModel from "@/models/userQuestionSchema";
 import { sendDiscordNotification } from "@/utils/discordNotifier";
+import { FilterQuery } from "mongoose";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+// Function to escape special regex characters
+const escapeRegex = (string: string) => {
+  return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -83,6 +89,7 @@ export async function GET(request: NextRequest) {
 
   // Get category filter from query params
   const category = searchParams.get("category");
+  const search = searchParams.get("search");
 
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
@@ -95,11 +102,21 @@ export async function GET(request: NextRequest) {
     await connect();
 
     // Build the base query - exclude flag
-    let baseQuery = {};
+    let baseQuery: FilterQuery<Questions> = {};
 
     // Add category filter if provided and not "All"
     if (category && category !== "All") {
-      baseQuery = { category: category };
+      baseQuery.category = category;
+    }
+
+    // Add search filter if provided
+    if (search) {
+      const searchRegex = new RegExp(escapeRegex(search), "i");
+      baseQuery.$or = [
+        { title: { $regex: searchRegex } },
+        { description: { $regex: searchRegex } },
+        { category: { $regex: searchRegex } },
+      ];
     }
 
     // Build the query with category filter
