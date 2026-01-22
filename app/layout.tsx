@@ -15,6 +15,8 @@ const dmSans = DM_Sans({
   preload: true,
 });
 
+const siteUrl = process.env.SITE_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
   title: {
     default: "FlagForge - The Ultimate CTF Platform",
@@ -22,7 +24,7 @@ export const metadata: Metadata = {
   },
   description:
     "Join FlagForge, the premier CTF platform to hone your cybersecurity skills with engaging challenges. Compete, learn, and grow your hacking expertise.",
-  metadataBase: new URL("https://flagforge.xyz"),
+  metadataBase: new URL(siteUrl),
   applicationName: "FlagForge CTF",
   referrer: "origin-when-cross-origin",
   keywords: [
@@ -60,7 +62,7 @@ export const metadata: Metadata = {
     title: "FlagForge - The Ultimate CTF Platform",
     description:
       "FlagForge is the go-to platform for Capture The Flag (CTF) competitions. Test your hacking skills with thrilling challenges in cybersecurity.",
-    url: "https://flagforge.xyz",
+    url: siteUrl,
     siteName: "FlagForge",
     images: [
       {
@@ -95,36 +97,36 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
-const structuredData = {
+const structuredData = (siteUrl: string) => ({
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "WebSite",
-      "@id": "https://flagforge.xyz/#website",
-      url: "https://flagforge.xyz",
+      "@id": `${siteUrl}/#website`,
+      url: siteUrl,
       name: "FlagForge",
       alternateName: "FlagForge CTF Platform",
       potentialAction: {
         "@type": "SearchAction",
-        target: "https://flagforge.xyz/search?q={search_term_string}",
+        target: `${siteUrl}/search?q={search_term_string}`,
         "query-input": "required name=search_term_string",
       },
       publisher: {
-        "@id": "https://flagforge.xyz/#organization",
+        "@id": `${siteUrl}/#organization`,
       },
     },
     {
       "@type": "Organization",
-      "@id": "https://flagforge.xyz/#organization",
+      "@id": `${siteUrl}/#organization`,
       name: "FlagForge",
-      url: "https://flagforge.xyz",
+      url: siteUrl,
       logo: {
         "@type": "ImageObject",
-        url: "https://flagforge.xyz/flagforge-logo.png",
+        url: `${siteUrl}/flagforge-logo.png`,
       },
     },
   ],
-};
+});
 
 export default function RootLayout({
   children,
@@ -137,7 +139,9 @@ export default function RootLayout({
         <script
           id="structured-data"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData(siteUrl)),
+          }}
         />
       </head>
       <body
