@@ -72,6 +72,9 @@ const questionSchema = new Schema<Questions>(
   { timestamps: true }
 );
 
+// Add a text index for searching
+questionSchema.index({ title: "text", description: "text", category: "text" });
+
 questionSchema.index({ expiryDate: 1 });
 
 questionSchema.index({ category: 1, points: 1 });
