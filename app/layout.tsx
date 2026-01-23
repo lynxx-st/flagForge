@@ -15,6 +15,8 @@ const dmSans = DM_Sans({
   preload: true,
 });
 
+const siteUrl = process.env.SITE_URL || 'https://flagforge.xyz';
+
 export const metadata: Metadata = {
   title: {
     default: "FlagForge - The Ultimate CTF Platform",
@@ -22,7 +24,7 @@ export const metadata: Metadata = {
   },
   description:
     "Join FlagForge, the premier CTF platform to hone your cybersecurity skills with engaging challenges. Compete, learn, and grow your hacking expertise.",
-  metadataBase: new URL("https://flagforge.xyz"),
+  metadataBase: new URL(siteUrl),
   applicationName: "FlagForge CTF",
   referrer: "origin-when-cross-origin",
   keywords: [
