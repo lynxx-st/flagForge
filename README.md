@@ -57,18 +57,23 @@ npm install
 
 <p>4. Configure .env</p>
 
+> [!CAUTION]
+> **IMPORTANT**: Do not prefix server-side environment variables with `NEXT_PUBLIC_`. This will expose them to the client-side and is a major security vulnerability.
+
 ```
-NEXT_PUBLIC_STATSIG_CLIENT_KEY=
-NEXT_PUBLIC_STATSIG_CLIENT_KEY=
-NEXT_PUBLIC_ADMIN_EMAIL=
-NEXT_PUBLIC_ADMIN_PASSWORD=
+# Server-side variables (NEVER expose to client)
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
 NOTION_API_KEY=
 NOTION_DATABASE_ID=
 GOOGLE_CLIENT_SECRET=
 GOOGLE_CLIENT_ID=
-NEXTAUTH_URL=
 MONGO_URL=
 NEXTAUTH_SECRET=
+NEXTAUTH_URL=
+
+# Client-side variables (safe to expose)
+NEXT_PUBLIC_STATSIG_CLIENT_KEY=
 ```
 
 <p>5. Run locally</p>
