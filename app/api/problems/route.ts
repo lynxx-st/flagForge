@@ -194,6 +194,9 @@ export async function GET(request: NextRequest) {
   // Get category filter from query params
   const category = searchParams.get("category");
 
+  // Get search query from query params
+  const searchQuery = searchParams.get("search");
+
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
 
@@ -209,6 +212,11 @@ export async function GET(request: NextRequest) {
     // Add category filter if provided and not "All"
     if (category && category !== "All") {
       baseQuery = { category: category };
+    }
+
+    // Add search query filter if provided
+    if (searchQuery) {
+      baseQuery = { ...baseQuery, $text: { $search: searchQuery } };
     }
 
     // Build the query with category filter
