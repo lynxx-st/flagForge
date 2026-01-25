@@ -203,11 +203,14 @@ export async function GET(request: NextRequest) {
   try {
     await connect();
 
+    // Fetch valid categories for validation to prevent NoSQL injection
+    const validCategories = await QuestionModel.distinct("category").exec();
+
     // Build the base query - exclude flag
     let baseQuery = {};
 
-    // Add category filter if provided and not "All"
-    if (category && category !== "All") {
+    // Add category filter if provided, not "All", and is a valid category
+    if (category && category !== "All" && validCategories.includes(category)) {
       baseQuery = { category: category };
     }
 
