@@ -22,7 +22,9 @@ export const metadata: Metadata = {
   },
   description:
     "Join FlagForge, the premier CTF platform to hone your cybersecurity skills with engaging challenges. Compete, learn, and grow your hacking expertise.",
-  metadataBase: new URL("https://flagforge.xyz"),
+  metadataBase: new URL(
+    process.env.SITE_URL || "http://localhost:3000"
+  ),
   applicationName: "FlagForge CTF",
   referrer: "origin-when-cross-origin",
   keywords: [
