@@ -160,9 +160,10 @@ const fetchPublicUserEntries = async () => {
   }
 };
 
+const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
 
 module.exports = {
-  siteUrl: 'https://flagforge.xyz',
+  siteUrl,
   generateRobotsTxt: true,
   generateIndexSitemap: false,
   changefreq: 'monthly',
@@ -197,22 +198,17 @@ module.exports = {
     };
   },
   robotsTxtOptions: {
-    transformRobotsTxt: async (config) => {
-      const disallowRules = SITEMAP_EXCLUDE.map((path) => `Disallow: ${path}`);
-
-      const sitemapRules = [
-        `Sitemap: ${config.siteUrl}/sitemap.xml`,
-        `Sitemap: ${config.siteUrl}/sitemap1.xml`,
-        `Sitemap: ${config.siteUrl}/sitemap.txt`,
-      ];
-
-      const customRules = [
-        'User-agent: *',
-        'Allow: /llms.txt',
-        ...disallowRules,
-      ];
-
-      return [...customRules, '', ...sitemapRules].join('\n');
-    },
+    policies: [
+      {
+        userAgent: '*',
+        allow: ['/llms.txt'],
+        disallow: SITEMAP_EXCLUDE,
+      },
+    ],
+    additionalSitemaps: [
+      `${siteUrl}/sitemap.xml`,
+      `${siteUrl}/sitemap1.xml`,
+      `${siteUrl}/sitemap.txt`,
+    ],
   },
 };
