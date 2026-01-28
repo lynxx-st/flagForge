@@ -506,40 +506,6 @@ const Page: React.FC = () => {
     errorMessage,
   } = useProblems(currentPage, selectedCategory, categoriesLoading);
 
-  const fetchAllProblems = useCallback(
-    async (category: string) => {
-      let page = 1;
-      let hasNext = true;
-      const allProblems: QuestionWithExpiry[] = [];
-
-      while (hasNext) {
-        let apiUrl = `/api/problems?page=${page}&limit=1000`;
-        if (category && category !== "All") {
-          apiUrl += `&category=${encodeURIComponent(category)}`;
-        }
-
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-          throw new Error("Failed to fetch problems");
-        }
-
-        const { data, pagination }: ApiResponse = await response.json();
-        const sanitizedData = sanitizeProblems(data);
-        allProblems.push(...sanitizedData);
-
-        hasNext = Boolean(pagination?.hasNext);
-        page += 1;
-
-        if (!pagination || data.length === 0) {
-          hasNext = false;
-        }
-      }
-
-      return allProblems;
-    },
-    []
-  );
-
   useEffect(() => {
     const query = searchQuery.trim();
     if (!query) {
@@ -552,20 +518,18 @@ const Page: React.FC = () => {
     const timer = setTimeout(async () => {
       setSearchLoading(true);
       try {
-        const allProblems = await fetchAllProblems(selectedCategory);
+        let apiUrl = `/api/problems?search=${encodeURIComponent(query)}&limit=1000`;
+        if (selectedCategory && selectedCategory !== "All") {
+          apiUrl += `&category=${encodeURIComponent(selectedCategory)}`;
+        }
+        const response = await fetch(apiUrl);
         if (cancelled) return;
-        const normalizedQuery = query.toLowerCase();
-        const filtered = allProblems.filter((problem) => {
-          const title = problem.title?.toLowerCase() || "";
-          const description = problem.description?.toLowerCase() || "";
-          const category = problem.category?.toLowerCase() || "";
-          return (
-            title.includes(normalizedQuery) ||
-            description.includes(normalizedQuery) ||
-            category.includes(normalizedQuery)
-          );
-        });
-        setSearchResults(filtered);
+        if (response.ok) {
+          const { data }: ApiResponse = await response.json();
+          setSearchResults(sanitizeProblems(data));
+        } else {
+          setSearchResults([]);
+        }
       } catch (error) {
         if (!cancelled) {
           console.error("Failed to search problems:", error);
@@ -582,7 +546,7 @@ const Page: React.FC = () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [fetchAllProblems, searchQuery, selectedCategory]);
+  }, [searchQuery, selectedCategory]);
 
   const isSearchActive = searchQuery.trim().length > 0;
   const visibleProblems = isSearchActive ? searchResults : problems;
