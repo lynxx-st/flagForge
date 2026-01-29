@@ -9,6 +9,7 @@ import Image from "next/image";
 import doubt from "@/public/doubt.png";
 import ConfettiBoom from "react-confetti-boom";
 import FloatingChat from "@/components/FloatingChat";
+import Spinner from "@/components/ui/spinner";
 import {
   ArrowLeft,
   ChevronDown,
@@ -1047,17 +1048,21 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   onClick={handleSubmit}
                   disabled={isSubmissionLocked}
                 >
-                  {submitting
-                    ? "Submitting..."
-                    : isExpired
-                      ? "Expired"
-                      : isCorrect && !isPracticeMode
-                        ? "Solved!"
-                        : sessionStatus === "unauthenticated"
-                          ? "Login to Submit"
-                          : isPracticeMode
-                            ? "Submit (Practice)"
-                            : "Submit"}
+                  {submitting ? (
+                    <div className="flex items-center justify-center">
+                      <Spinner />
+                    </div>
+                  ) : isExpired ? (
+                    "Expired"
+                  ) : isCorrect && !isPracticeMode ? (
+                    "Solved!"
+                  ) : sessionStatus === "unauthenticated" ? (
+                    "Login to Submit"
+                  ) : isPracticeMode ? (
+                    "Submit (Practice)"
+                  ) : (
+                    "Submit"
+                  )}
                 </button>
 
                 {/* Time remaining display */}
