@@ -84,6 +84,12 @@ questionSchema.index({ expiryDate: 1 });
 
 questionSchema.index({ category: 1, points: 1 });
 
+questionSchema.index({
+  title: "text",
+  description: "text",
+  category: "text",
+});
+
 const QuestionModel =
   mongoose.models.Question || model("Question", questionSchema);
 
