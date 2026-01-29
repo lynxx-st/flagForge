@@ -426,17 +426,20 @@ const ExpiryOverlay: React.FC<{
 const NoProblemsMessage: React.FC<{
   selectedCategory: string;
   onShowAll: () => void;
-}> = ({ selectedCategory, onShowAll }) => (
+  searchQuery?: string;
+}> = ({ selectedCategory, onShowAll, searchQuery }) => (
   <div className="col-span-full text-center py-12">
     <div className="text-gray-500 dark:text-gray-400 rounded-2xl border border-dashed border-gray-200 dark:border-white/10 bg-white/60 dark:bg-gray-900/40 backdrop-blur-xl px-6 py-10">
       <IoFilter className="mx-auto text-4xl mb-4 opacity-50" />
       <p className="text-lg font-medium">No challenges found</p>
       <p className="text-sm">
-        {selectedCategory !== "All"
+        {searchQuery
+          ? `No challenges found for "${searchQuery}"`
+          : selectedCategory !== "All"
           ? `No challenges available in "${selectedCategory}" category`
           : "No challenges available at the moment"}
       </p>
-      {selectedCategory !== "All" && (
+      {selectedCategory !== "All" && !searchQuery && (
         <button
           onClick={onShowAll}
           className="mt-4 text-red-500 hover:text-red-600 underline"
@@ -765,6 +768,7 @@ const Page: React.FC = () => {
             <NoProblemsMessage
               selectedCategory={selectedCategory}
               onShowAll={() => handleCategoryChange("All")}
+              searchQuery={searchQuery}
             />
           ) : null}
         </div>
