@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   description:
     "Join FlagForge, the premier CTF platform to hone your cybersecurity skills with engaging challenges. Compete, learn, and grow your hacking expertise.",
-  metadataBase: new URL("https://flagforge.xyz"),
+  metadataBase: new URL(process.env.SITE_URL || "https://flagforge.xyz"),
   applicationName: "FlagForge CTF",
   referrer: "origin-when-cross-origin",
   keywords: [
@@ -39,9 +39,6 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "@Aryanstha", url: "https://github.com/aryan4859" }],
   publisher: "FlagForge",
-  alternates: {
-    canonical: "/",
-  },
   robots: {
     index: true,
     follow: true,
