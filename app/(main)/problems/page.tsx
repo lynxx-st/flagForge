@@ -636,14 +636,14 @@ const Page: React.FC = () => {
   }, [setProblems]);
 
   // Loading states
-  if (problemsLoading && categoriesLoading) {
-    return <Loading />;
-  }
+  // if (problemsLoading && categoriesLoading) {
+  //   return <Loading />;
+  // }
 
   // Remove authentication requirement - allow public browsing
-  if (sessionStatus === "loading") {
-    return <Loading />;
-  }
+  // if (sessionStatus === "loading") {
+  //   return <Loading />;
+  // }
 
   // Note: Removed authentication check to allow public browsing
   // Authentication will be required only when solving challenges
@@ -724,6 +724,16 @@ const Page: React.FC = () => {
           className="w-full grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 items-stretch gap-5 sm:gap-6"
           aria-busy={problemsLoading}
         >
+          <div className="relative transition-transform duration-300 hover:-translate-y-1">
+            <QustionCards
+              title="Test Card"
+              category="Test"
+              points={100}
+              description="This is a test description."
+              done={[]}
+              _id="test-id"
+            />
+          </div>
           {visibleProblems.length > 0 ? (
             visibleProblems.map(
               ({
