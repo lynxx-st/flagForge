@@ -27,9 +27,10 @@ export async function GET(req: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    // Fetch challenges and total count
+    // Fetch challenges and total count - exclude sensitive fields
     const [challenges, total] = await Promise.all([
       ArchivedChallenge.find(query)
+        .select("-uploadedBy")
         .sort({ eventDate: -1, createdAt: -1 })
         .skip(skip)
         .limit(limit)
