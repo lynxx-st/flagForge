@@ -1,9 +1,9 @@
-import React from "react";
+import React, { memo } from "react";
 import { Questions } from "@/interfaces";
 import Link from "next/link";
 import { Check } from "lucide-react";
 
-const QuestionCards = ({
+const QuestionCards = memo(({
   title,
   description,
   category,
@@ -49,6 +49,8 @@ const QuestionCards = ({
       </h3>
     </Link>
   );
-};
+});
+
+QuestionCards.displayName = "QuestionCards";
 
 export default QuestionCards;

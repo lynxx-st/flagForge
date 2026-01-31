@@ -193,6 +193,8 @@ export async function GET(request: NextRequest) {
 
   // Get category filter from query params
   const category = searchParams.get("category");
+  // Get search query from query params
+  const search = searchParams.get("search");
 
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
@@ -204,11 +206,16 @@ export async function GET(request: NextRequest) {
     await connect();
 
     // Build the base query - exclude flag
-    let baseQuery = {};
+    let baseQuery: any = {};
 
     // Add category filter if provided and not "All"
     if (category && category !== "All") {
-      baseQuery = { category: category };
+      baseQuery.category = category;
+    }
+
+    // Add text search if search query is provided
+    if (search && search.trim()) {
+      baseQuery.$text = { $search: search.trim() };
     }
 
     // Build the query with category filter
@@ -222,23 +229,23 @@ export async function GET(request: NextRequest) {
       query = query.skip(startIndex).limit(limit);
     }
 
-    const questions = await query.exec();
+    // Parallelize database queries for better performance
+    const [questions, totalQuestions, user] = await Promise.all([
+      query.exec(),
+      QuestionModel.countDocuments(baseQuery),
+      session?.user?.email
+        ? userSchema.findOne({ email: session.user.email })
+        : Promise.resolve(null)
+    ]);
 
-    let user = null;
     let userQuestion = [];
     let totalScore = 0;
 
-    // Only fetch user data if session exists
-    if (session?.user?.email) {
-      user = await userSchema.findOne({ email: session.user.email });
-      if (user) {
-        userQuestion = await UserQuestionModel.find({ userId: user.id });
-        totalScore = user.totalScore || 0;
-      }
+    // Fetch user solved questions if user exists
+    if (user) {
+      userQuestion = await UserQuestionModel.find({ userId: user.id });
+      totalScore = user.totalScore || 0;
     }
-
-    // Get total count for pagination info (with category filter applied)
-    const totalQuestions = await QuestionModel.countDocuments(baseQuery);
 
     // Process questions to add expiry information
     const now = new Date();
