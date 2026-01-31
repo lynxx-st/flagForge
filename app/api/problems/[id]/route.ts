@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import connect from "@/utils/db";
 import QuestionModel from "@/models/qustionsSchema";
 import { HttpStatusCode } from "axios";
@@ -204,10 +205,22 @@ export async function POST(
     const trimmedSubmittedFlag = submittedFlag.trim();
     const correctFlag = question.flag.trim();
 
+    // Secure flag comparison using timingSafeEqual to prevent timing attacks.
+    // We hash both flags with SHA-256 before comparison to handle different lengths securely
+    // while avoiding the need for a secret key/fallback secret.
+    const submittedHash = crypto.createHash("sha256")
+      .update(trimmedSubmittedFlag)
+      .digest();
+    const correctHash = crypto.createHash("sha256")
+      .update(correctFlag)
+      .digest();
+
+    const isCorrectFlag = crypto.timingSafeEqual(submittedHash, correctHash);
+
     // Check if user has already solved this question
     const existingSolution = await checkExistingSolution(user._id, id);
     if (existingSolution && isPractice) {
-      const isCorrect = trimmedSubmittedFlag === correctFlag;
+      const isCorrect = isCorrectFlag;
       return NextResponse.json(
         {
           message: isCorrect
@@ -227,7 +240,7 @@ export async function POST(
     }
 
     // Check if the submitted flag is correct
-    if (trimmedSubmittedFlag === correctFlag) {
+    if (isCorrectFlag) {
       // Flag is correct - save the solution
       try {
         // Calculate final points considering hint penalties
