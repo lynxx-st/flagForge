@@ -412,8 +412,6 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
             setShowConfetti(true);
             setTimeout(() => setShowConfetti(false), 3000);
             setFlag("");
-            setTimeout(() => setIsDone(true), 5000);
-            setTimeout(() => router.push("/problems"), 8000);
           } else {
             setFlag("");
             lastSubmittedFlag.current = "";
@@ -585,10 +583,17 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
             <p className="mt-3 text-center text-gray-600 dark:text-gray-300">
               {message || "Flag accepted. Great work!"}
             </p>
-            <div className="mt-6 flex items-center justify-center gap-3">
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setIsDone(true)}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-green-200/80 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-5 py-2 text-sm font-semibold text-green-700 dark:text-green-200 hover:bg-white/90 dark:hover:bg-gray-900 transition-colors"
+              >
+                View summary
+              </button>
               <Link
                 href="/problems"
-                className="inline-flex items-center gap-2 rounded-full bg-green-600 text-white px-5 py-2 text-sm font-semibold shadow-sm hover:bg-green-700 transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-green-600 text-white px-5 py-2 text-sm font-semibold shadow-sm hover:bg-green-700 transition-colors"
               >
                 Back to problems
               </Link>
@@ -1021,8 +1026,9 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   }`}
                 aria-busy={submitting}
               >
-                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Submit Flag</p>
+                <label htmlFor="flag-input" className="text-lg font-semibold text-gray-900 dark:text-gray-100">Submit Flag</label>
                 <input
+                  id="flag-input"
                   type="text"
                   className={`py-2.5 px-4 block w-full border rounded-full text-base sm:text-lg bg-white/90 dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400 dark:focus:ring-red-400 transition-colors duration-300 shadow-sm ${isSubmissionLocked
                     ? "border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900/60"
