@@ -249,9 +249,9 @@ const DesktopFilter: React.FC<{
     <div className="hidden sm:flex items-center justify-between gap-4 w-full rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl px-4 py-3 mb-4 shadow-[0_12px_35px_-28px_rgba(15,23,42,0.45)] flex-wrap">
       <div className="flex items-center gap-2">
         <IoFilter className="text-xl text-gray-500 dark:text-gray-300" />
-        <span className="text-gray-600 dark:text-gray-300 font-semibold">
+        <label htmlFor="category-select" className="text-gray-600 dark:text-gray-300 font-semibold cursor-pointer">
           Filter by Category:
-        </span>
+        </label>
       </div>
 
       <div className="relative">
@@ -261,6 +261,7 @@ const DesktopFilter: React.FC<{
           </div>
         ) : (
           <select
+            id="category-select"
             value={selectedCategory}
             onChange={(e) => onCategoryChange(e.target.value)}
             className="appearance-none bg-white/90 dark:bg-gray-900/70 border border-gray-200 dark:border-white/10 rounded-full px-4 py-2 pr-10 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 transition-colors duration-300 shadow-sm"
