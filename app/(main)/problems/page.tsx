@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import QustionCards from "@/components/QuestionCards";
+import QuestionCards from "@/components/QuestionCards";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
 import { IoFilter, IoChevronDown, IoSearch } from "react-icons/io5";
@@ -426,24 +426,38 @@ const ExpiryOverlay: React.FC<{
 const NoProblemsMessage: React.FC<{
   selectedCategory: string;
   onShowAll: () => void;
-}> = ({ selectedCategory, onShowAll }) => (
+  searchQuery: string;
+  onClearSearch: () => void;
+}> = ({ selectedCategory, onShowAll, searchQuery, onClearSearch }) => (
   <div className="col-span-full text-center py-12">
     <div className="text-gray-500 dark:text-gray-400 rounded-2xl border border-dashed border-gray-200 dark:border-white/10 bg-white/60 dark:bg-gray-900/40 backdrop-blur-xl px-6 py-10">
       <IoFilter className="mx-auto text-4xl mb-4 opacity-50" />
       <p className="text-lg font-medium">No challenges found</p>
       <p className="text-sm">
-        {selectedCategory !== "All"
-          ? `No challenges available in "${selectedCategory}" category`
-          : "No challenges available at the moment"}
+        {searchQuery.trim()
+          ? `No challenges matching "${searchQuery}" were found`
+          : selectedCategory !== "All"
+            ? `No challenges available in "${selectedCategory}" category`
+            : "No challenges available at the moment"}
       </p>
-      {selectedCategory !== "All" && (
-        <button
-          onClick={onShowAll}
-          className="mt-4 text-red-500 hover:text-red-600 underline"
-        >
-          View all challenges
-        </button>
-      )}
+      <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
+        {searchQuery.trim() && (
+          <button
+            onClick={onClearSearch}
+            className="text-red-500 hover:text-red-600 underline text-sm font-medium"
+          >
+            Clear search
+          </button>
+        )}
+        {selectedCategory !== "All" && (
+          <button
+            onClick={onShowAll}
+            className="text-red-500 hover:text-red-600 underline text-sm font-medium"
+          >
+            View all categories
+          </button>
+        )}
+      </div>
     </div>
   </div>
 );
@@ -460,24 +474,18 @@ const PaginationControls: React.FC<{
   return (
     <div className="flex justify-center sm:justify-end gap-3 w-full">
       <button
-        onClick={isFirstPage ? (e) => e.preventDefault() : onPrevious}
-        aria-disabled={isFirstPage}
+        onClick={onPrevious}
+        disabled={isFirstPage}
         title={isFirstPage ? "You are on the first page" : "Go to previous page"}
-        className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${isFirstPage
-            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-            : "bg-red-500/90 hover:bg-red-600"
-          }`}
+        className="font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 bg-red-500/90 hover:bg-red-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
       >
         Previous
       </button>
       <button
-        onClick={isLastPage ? (e) => e.preventDefault() : onNext}
-        aria-disabled={isLastPage}
+        onClick={onNext}
+        disabled={isLastPage}
         title={isLastPage ? "You are on the last page" : "Go to next page"}
-        className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${isLastPage
-            ? "bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed"
-            : "bg-red-500/90 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600"
-          }`}
+        className="font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 bg-red-500/90 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600 disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-300 disabled:cursor-not-allowed"
       >
         Next
       </button>
@@ -741,7 +749,7 @@ const Page: React.FC = () => {
                   key={_id}
                   className="relative transition-transform duration-300 hover:-translate-y-1"
                 >
-                  <QustionCards
+                  <QuestionCards
                     title={title}
                     category={category}
                     points={points}
@@ -765,6 +773,8 @@ const Page: React.FC = () => {
             <NoProblemsMessage
               selectedCategory={selectedCategory}
               onShowAll={() => handleCategoryChange("All")}
+              searchQuery={searchQuery}
+              onClearSearch={() => setSearchQuery("")}
             />
           ) : null}
         </div>
