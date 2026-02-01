@@ -57,8 +57,6 @@ const SITEMAP_EXCLUDE = [
   '/roles/developers/*',
   '/roles/developers',
   '/profile',
-  '/problems',
-  '/leaderboard',
   '/home',
   'resources/uploads',
   '/unauthorized',
@@ -162,7 +160,7 @@ const fetchPublicUserEntries = async () => {
 
 
 module.exports = {
-  siteUrl: 'https://flagforge.xyz',
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://flagforge.xyz',
   generateRobotsTxt: true,
   generateIndexSitemap: false,
   changefreq: 'monthly',
@@ -197,22 +195,17 @@ module.exports = {
     };
   },
   robotsTxtOptions: {
-    transformRobotsTxt: async (config) => {
-      const disallowRules = SITEMAP_EXCLUDE.map((path) => `Disallow: ${path}`);
-
-      const sitemapRules = [
-        `Sitemap: ${config.siteUrl}/sitemap.xml`,
-        `Sitemap: ${config.siteUrl}/sitemap1.xml`,
-        `Sitemap: ${config.siteUrl}/sitemap.txt`,
-      ];
-
-      const customRules = [
-        'User-agent: *',
-        'Allow: /llms.txt',
-        ...disallowRules,
-      ];
-
-      return [...customRules, '', ...sitemapRules].join('\n');
-    },
+    policies: [
+      {
+        userAgent: '*',
+        allow: ['/llms.txt'],
+        disallow: SITEMAP_EXCLUDE,
+      },
+    ],
+    additionalSitemaps: [
+      `${process.env.NEXT_PUBLIC_SITE_URL || 'https://flagforge.xyz'}/sitemap.xml`,
+      `${process.env.NEXT_PUBLIC_SITE_URL || 'https://flagforge.xyz'}/sitemap1.xml`,
+      `${process.env.NEXT_PUBLIC_SITE_URL || 'https://flagforge.xyz'}/sitemap.txt`,
+    ],
   },
 };
