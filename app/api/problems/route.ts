@@ -222,23 +222,21 @@ export async function GET(request: NextRequest) {
       query = query.skip(startIndex).limit(limit);
     }
 
-    const questions = await query.exec();
+    // Execute independent queries in parallel to optimize API response time
+    const [questions, totalQuestions, user] = await Promise.all([
+      query.exec(),
+      QuestionModel.countDocuments(baseQuery),
+      session?.user?.email ? userSchema.findOne({ email: session.user.email }) : null,
+    ]);
 
-    let user = null;
     let userQuestion = [];
     let totalScore = 0;
 
-    // Only fetch user data if session exists
-    if (session?.user?.email) {
-      user = await userSchema.findOne({ email: session.user.email });
-      if (user) {
-        userQuestion = await UserQuestionModel.find({ userId: user.id });
-        totalScore = user.totalScore || 0;
-      }
+    // Fetch user-specific question completion if user exists
+    if (user) {
+      userQuestion = await UserQuestionModel.find({ userId: user.id });
+      totalScore = user.totalScore || 0;
     }
-
-    // Get total count for pagination info (with category filter applied)
-    const totalQuestions = await QuestionModel.countDocuments(baseQuery);
 
     // Process questions to add expiry information
     const now = new Date();

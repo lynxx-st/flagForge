@@ -16,26 +16,28 @@ export async function GET() {
       .limit(50) // Limit to top 50 users
       .select("name totalScore image _id");
 
-    // Calculate roomsCompleted for each user
-    const leaderboardPromises = users.map(async (user, index) => {
-      // Count completed questions for this user
-      // Remove the completion filter for now until we debug it properly
-      const roomsCompleted = await UserQuestionModel.countDocuments({
-        userId: user._id,
-      });
+    const userIds = users.map((user) => user._id);
 
-      return {
-        name: user.name,
-        totalScore: user.totalScore,
-        image: user.image,
-        roomsCompleted,
-        rank: index + 1, // Rank starts from 1
-        slug: user.name.replace(/\s+/g, "-"),
-      };
-    });
+    // Get completion counts for all top users in one query to fix N+1 problem
+    const completionCounts = await UserQuestionModel.aggregate([
+      { $match: { userId: { $in: userIds } } },
+      { $group: { _id: "$userId", count: { $sum: 1 } } },
+    ]);
 
-    // Wait for all promises to resolve
-    const leaderboard = await Promise.all(leaderboardPromises);
+    // Create a map for quick lookup of completion counts
+    const countsMap = new Map(
+      completionCounts.map((item) => [item._id.toString(), item.count])
+    );
+
+    // Map users to the final leaderboard format
+    const leaderboard = users.map((user, index) => ({
+      name: user.name,
+      totalScore: user.totalScore,
+      image: user.image,
+      roomsCompleted: countsMap.get(user._id.toString()) || 0,
+      rank: index + 1, // Rank starts from 1
+      slug: user.name.replace(/\s+/g, "-"),
+    }));
 
     // Return the leaderboard as JSON
     return NextResponse.json(leaderboard);
