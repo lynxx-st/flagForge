@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connect from "@/utils/db";
 import QuestionModel from "@/models/qustionsSchema";
+import crypto from "crypto";
 import { HttpStatusCode } from "axios";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
@@ -87,6 +88,21 @@ async function checkExistingSolution(userId: string, questionId: string) {
 
 function createErrorResponse(message: string, status: number) {
   return NextResponse.json({ message }, { status });
+}
+
+/**
+ * Compares two strings using a timing-safe approach to prevent timing attacks.
+ * It hashes both strings with SHA-256 to ensure equal length before comparison.
+ */
+function timingSafeCompare(submitted: string, correct: string): boolean {
+  if (typeof submitted !== "string" || typeof correct !== "string") {
+    return false;
+  }
+
+  const submittedHash = crypto.createHash("sha256").update(submitted).digest();
+  const correctHash = crypto.createHash("sha256").update(correct).digest();
+
+  return crypto.timingSafeEqual(submittedHash, correctHash);
 }
 
 export async function GET(
@@ -207,7 +223,7 @@ export async function POST(
     // Check if user has already solved this question
     const existingSolution = await checkExistingSolution(user._id, id);
     if (existingSolution && isPractice) {
-      const isCorrect = trimmedSubmittedFlag === correctFlag;
+      const isCorrect = timingSafeCompare(trimmedSubmittedFlag, correctFlag);
       return NextResponse.json(
         {
           message: isCorrect
@@ -227,7 +243,7 @@ export async function POST(
     }
 
     // Check if the submitted flag is correct
-    if (trimmedSubmittedFlag === correctFlag) {
+    if (timingSafeCompare(trimmedSubmittedFlag, correctFlag)) {
       // Flag is correct - save the solution
       try {
         // Calculate final points considering hint penalties
