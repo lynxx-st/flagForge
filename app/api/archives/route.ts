@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
         .sort({ eventDate: -1, createdAt: -1 })
         .skip(skip)
         .limit(limit)
+        .select("-uploadedBy") // Exclude admin email from public API
         .lean(),
       ArchivedChallenge.countDocuments(query),
     ]);

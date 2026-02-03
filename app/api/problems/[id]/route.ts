@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/authOptions";
 import userSchema from "@/models/userSchema";
 import UserQuestionModel from "@/models/userQuestionSchema";
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -89,6 +90,20 @@ function createErrorResponse(message: string, status: number) {
   return NextResponse.json({ message }, { status });
 }
 
+/**
+ * Compare two strings in constant time to prevent timing attacks
+ */
+function timingSafeCompare(a: string, b: string) {
+  const aHash = crypto.createHash("sha256").update(a).digest();
+  const bHash = crypto.createHash("sha256").update(b).digest();
+
+  if (aHash.length !== bHash.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(aHash, bHash);
+}
+
 export async function GET(
   _: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -120,7 +135,8 @@ export async function GET(
 
     const questionData = question.toObject();
     delete questionData.flag;
-    delete questionData.hints; // Remove hints from main data
+    delete questionData.hints;
+    delete questionData.uploadedBy; // Remove sensitive admin info
 
     // Only fetch user-specific data if session exists
     let isDone = false;
@@ -207,7 +223,7 @@ export async function POST(
     // Check if user has already solved this question
     const existingSolution = await checkExistingSolution(user._id, id);
     if (existingSolution && isPractice) {
-      const isCorrect = trimmedSubmittedFlag === correctFlag;
+      const isCorrect = timingSafeCompare(trimmedSubmittedFlag, correctFlag);
       return NextResponse.json(
         {
           message: isCorrect
@@ -226,8 +242,8 @@ export async function POST(
       );
     }
 
-    // Check if the submitted flag is correct
-    if (trimmedSubmittedFlag === correctFlag) {
+    // Check if the submitted flag is correct using timing-safe comparison
+    if (timingSafeCompare(trimmedSubmittedFlag, correctFlag)) {
       // Flag is correct - save the solution
       try {
         // Calculate final points considering hint penalties
