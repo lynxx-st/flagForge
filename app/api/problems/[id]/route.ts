@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/authOptions";
 import userSchema from "@/models/userSchema";
 import UserQuestionModel from "@/models/userQuestionSchema";
 import mongoose from "mongoose";
+import { timingSafeEqual, createHash } from "crypto";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -89,6 +90,16 @@ function createErrorResponse(message: string, status: number) {
   return NextResponse.json({ message }, { status });
 }
 
+/**
+ * Securely compares two strings to prevent timing attacks.
+ * Hashes both strings with SHA-256 before comparison to handle variable lengths.
+ */
+function timingSafeCompare(submitted: string, correct: string): boolean {
+  const submittedHash = createHash("sha256").update(submitted).digest();
+  const correctHash = createHash("sha256").update(correct).digest();
+  return timingSafeEqual(submittedHash, correctHash);
+}
+
 export async function GET(
   _: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -120,7 +131,8 @@ export async function GET(
 
     const questionData = question.toObject();
     delete questionData.flag;
-    delete questionData.hints; // Remove hints from main data
+    delete questionData.hints;
+    delete questionData.uploadedBy;
 
     // Only fetch user-specific data if session exists
     let isDone = false;
@@ -207,7 +219,7 @@ export async function POST(
     // Check if user has already solved this question
     const existingSolution = await checkExistingSolution(user._id, id);
     if (existingSolution && isPractice) {
-      const isCorrect = trimmedSubmittedFlag === correctFlag;
+      const isCorrect = timingSafeCompare(trimmedSubmittedFlag, correctFlag);
       return NextResponse.json(
         {
           message: isCorrect
@@ -227,7 +239,7 @@ export async function POST(
     }
 
     // Check if the submitted flag is correct
-    if (trimmedSubmittedFlag === correctFlag) {
+    if (timingSafeCompare(trimmedSubmittedFlag, correctFlag)) {
       // Flag is correct - save the solution
       try {
         // Calculate final points considering hint penalties
