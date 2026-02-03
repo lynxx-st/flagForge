@@ -10,32 +10,38 @@ export async function GET() {
     // Connect to the database
     await connect();
 
-    // Fetch top 50 users sorted by totalScore in descending order
-    const users = await User.find({})
-      .sort({ totalScore: -1 })
-      .limit(50) // Limit to top 50 users
-      .select("name totalScore image _id");
+    // Fetch top 50 users and calculate roomsCompleted using an aggregation pipeline
+    // This avoids the N+1 query problem by performing a join and count in a single database roundtrip
+    const leaderboardData = await User.aggregate([
+      { $sort: { totalScore: -1 } },
+      { $limit: 50 },
+      {
+        $lookup: {
+          from: UserQuestionModel.collection.name,
+          localField: "_id",
+          foreignField: "userId",
+          as: "completedQuestions",
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          totalScore: 1,
+          image: 1,
+          roomsCompleted: { $size: "$completedQuestions" },
+        },
+      },
+    ]);
 
-    // Calculate roomsCompleted for each user
-    const leaderboardPromises = users.map(async (user, index) => {
-      // Count completed questions for this user
-      // Remove the completion filter for now until we debug it properly
-      const roomsCompleted = await UserQuestionModel.countDocuments({
-        userId: user._id,
-      });
-
-      return {
-        name: user.name,
-        totalScore: user.totalScore,
-        image: user.image,
-        roomsCompleted,
-        rank: index + 1, // Rank starts from 1
-        slug: user.name.replace(/\s+/g, "-"),
-      };
-    });
-
-    // Wait for all promises to resolve
-    const leaderboard = await Promise.all(leaderboardPromises);
+    // Add rank and slug to the leaderboard data
+    const leaderboard = leaderboardData.map((user, index) => ({
+      name: user.name,
+      totalScore: user.totalScore,
+      image: user.image,
+      roomsCompleted: user.roomsCompleted,
+      rank: index + 1,
+      slug: user.name.replace(/\s+/g, "-"),
+    }));
 
     // Return the leaderboard as JSON
     return NextResponse.json(leaderboard);

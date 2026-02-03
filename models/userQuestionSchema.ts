@@ -18,6 +18,11 @@ const userQuestionSchema = new Schema<UserQuestion>(
     { timestamps: true }
 );
 
+// Index userId for faster completion lookups
+userQuestionSchema.index({ userId: 1 });
+// Compound index for unique completions and faster lookups
+userQuestionSchema.index({ userId: 1, questionId: 1 }, { unique: true });
+
 const UserQuestionModel =
     mongoose.models.UserQuestion || model("UserQuestion", userQuestionSchema);
 
