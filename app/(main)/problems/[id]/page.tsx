@@ -86,6 +86,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   const [hintLoading, setHintLoading] = useState<boolean>(false);
   const [usedHints, setUsedHints] = useState<number[]>([]);
   const [hintCount, setHintCount] = useState<number>(0);
+  const [confirmingHint, setConfirmingHint] = useState<number | null>(null);
   const [practiceMode, setPracticeMode] = useState<boolean>(false);
   const [chatHintStats, setChatHintStats] = useState({
     totalPointsDeducted: 0,
@@ -977,13 +978,35 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                                 </div>
                                 <div>
                                   {!isUsed && !isPracticeMode && (
-                                    <button
-                                      onClick={() => requestHint(hintIdx)}
-                                      disabled={hintLoading}
-                                      className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-1 rounded-full text-sm font-medium transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                      {hintLoading ? "..." : "Use Hint"}
-                                    </button>
+                                    confirmingHint === hintIdx ? (
+                                      <div className="flex gap-2">
+                                        <button
+                                          onClick={async () => {
+                                            await requestHint(hintIdx);
+                                            setConfirmingHint(null);
+                                          }}
+                                          disabled={hintLoading}
+                                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full text-xs font-medium transition-colors"
+                                        >
+                                          {hintLoading ? "..." : "Confirm"}
+                                        </button>
+                                        <button
+                                          onClick={() => setConfirmingHint(null)}
+                                          disabled={hintLoading}
+                                          className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-1 rounded-full text-xs font-medium transition-colors"
+                                        >
+                                          Cancel
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        onClick={() => setConfirmingHint(hintIdx)}
+                                        disabled={hintLoading}
+                                        className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-1 rounded-full text-sm font-medium transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                      >
+                                        {hintLoading ? "..." : "Use Hint"}
+                                      </button>
+                                    )
                                   )}
                                   {!isUsed && isPracticeMode && (
                                     <span className="text-xs font-medium text-rose-600 dark:text-rose-300">
