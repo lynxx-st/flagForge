@@ -57,8 +57,6 @@ const SITEMAP_EXCLUDE = [
   '/roles/developers/*',
   '/roles/developers',
   '/profile',
-  '/problems',
-  '/leaderboard',
   '/home',
   'resources/uploads',
   '/unauthorized',
@@ -110,6 +108,28 @@ const fetchBlogEntries = async () => {
   }
 };
 
+const ensureConnection = async (mongoUrl) => {
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(mongoUrl, {
+      maxPoolSize: 10,
+      minPoolSize: 1,
+      maxIdleTimeMS: 30000,
+      bufferCommands: false,
+    });
+  } else if (mongoose.connection.readyState === 2) {
+    // If connecting, wait for it to be ready
+    await new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (mongoose.connection.readyState === 1) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+  }
+  return mongoose.connection;
+};
+
 const fetchPublicUserEntries = async () => {
   const mongoUrl = process.env.MONGO_URL;
 
@@ -118,19 +138,11 @@ const fetchPublicUserEntries = async () => {
     return [];
   }
 
-  let shouldDisconnect = false;
   try {
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(mongoUrl, {
-        maxPoolSize: 10,
-        minPoolSize: 1,
-        maxIdleTimeMS: 30000,
-        bufferCommands: false,
-      });
-      shouldDisconnect = true;
-    }
+    const connection = await ensureConnection(mongoUrl);
+    if (!connection.db) return [];
 
-    const users = await mongoose.connection.db
+    const users = await connection.db
       .collection('users')
       .find({}, { projection: { name: 1, updatedAt: 1, createdAt: 1 } })
       .toArray();
@@ -153,16 +165,44 @@ const fetchPublicUserEntries = async () => {
   } catch (error) {
     console.warn('Failed to fetch public users for sitemap.', error);
     return [];
-  } finally {
-    if (shouldDisconnect) {
-      await mongoose.disconnect();
-    }
+  }
+};
+
+const fetchPublicProblemEntries = async () => {
+  const mongoUrl = process.env.MONGO_URL;
+
+  if (!mongoUrl) {
+    console.warn('MONGO_URL is missing, skipping public problem sitemap entries.');
+    return [];
+  }
+
+  try {
+    const connection = await ensureConnection(mongoUrl);
+    if (!connection.db) return [];
+
+    const problems = await connection.db
+      .collection('questions')
+      .find({}, { projection: { _id: 1, updatedAt: 1, createdAt: 1 } })
+      .toArray();
+
+    return problems
+      .map((problem) => ({
+        loc: `/problems/${problem._id.toString()}`,
+        lastmod: (problem.updatedAt || problem.createdAt) ? new Date(problem.updatedAt || problem.createdAt).toISOString() : undefined,
+        changefreq: 'weekly',
+        priority: 0.8,
+      }));
+  } catch (error) {
+    console.warn('Failed to fetch public problems for sitemap.', error);
+    return [];
   }
 };
 
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://flagforge.xyz';
+
 module.exports = {
-  siteUrl: 'https://flagforge.xyz',
+  siteUrl: SITE_URL,
   generateRobotsTxt: true,
   generateIndexSitemap: false,
   changefreq: 'monthly',
@@ -170,19 +210,25 @@ module.exports = {
   autoLastmod: false,
   exclude: SITEMAP_EXCLUDE,
   additionalPaths: async () => {
-    const [blogEntries, userEntries] = await Promise.all([
+    const [blogEntries, userEntries, problemEntries] = await Promise.all([
       fetchBlogEntries(),
       fetchPublicUserEntries(),
+      fetchPublicProblemEntries(),
     ]);
 
-    return [...blogEntries, ...userEntries];
+    // Disconnect after all fetches are done
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
+
+    return [...blogEntries, ...userEntries, ...problemEntries];
   },
   transform: async (config, path) => {
     // Custom priority for landing and global pages
     let priority = config.priority;
     if (path === '/') {
       priority = 1.0;
-    } else if (['/about', '/contact', '/blogs', '/authentication', '/resources'].includes(path)) {
+    } else if (['/about', '/contact', '/blogs', '/authentication', '/resources', '/problems', '/leaderboard', '/archives', '/event-scoreboards'].includes(path)) {
       priority = 0.9;
     }
 
@@ -197,22 +243,17 @@ module.exports = {
     };
   },
   robotsTxtOptions: {
-    transformRobotsTxt: async (config) => {
-      const disallowRules = SITEMAP_EXCLUDE.map((path) => `Disallow: ${path}`);
-
-      const sitemapRules = [
-        `Sitemap: ${config.siteUrl}/sitemap.xml`,
-        `Sitemap: ${config.siteUrl}/sitemap1.xml`,
-        `Sitemap: ${config.siteUrl}/sitemap.txt`,
-      ];
-
-      const customRules = [
-        'User-agent: *',
-        'Allow: /llms.txt',
-        ...disallowRules,
-      ];
-
-      return [...customRules, '', ...sitemapRules].join('\n');
-    },
+    policies: [
+      {
+        userAgent: '*',
+        allow: ['/', '/llms.txt'],
+        disallow: SITEMAP_EXCLUDE,
+      }
+    ],
+    additionalSitemaps: [
+      `${SITE_URL}/sitemap.xml`,
+      `${SITE_URL}/sitemap1.xml`,
+      `${SITE_URL}/sitemap.txt`,
+    ],
   },
 };

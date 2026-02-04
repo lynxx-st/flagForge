@@ -39,9 +39,6 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "@Aryanstha", url: "https://github.com/aryan4859" }],
   publisher: "FlagForge",
-  alternates: {
-    canonical: "/",
-  },
   robots: {
     index: true,
     follow: true,
