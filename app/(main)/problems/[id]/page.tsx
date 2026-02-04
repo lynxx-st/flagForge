@@ -14,6 +14,7 @@ import {
   ChevronDown,
   ExternalLink,
   Lightbulb,
+  Loader2,
   Trophy,
 } from "lucide-react";
 
@@ -1021,8 +1022,15 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   }`}
                 aria-busy={submitting}
               >
-                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Submit Flag</p>
+                <label
+                  htmlFor="flag-input"
+                  className="text-lg font-semibold text-gray-900 dark:text-gray-100 cursor-pointer"
+                >
+                  Submit Flag
+                </label>
                 <input
+                  id="flag-input"
+                  name="flag"
                   type="text"
                   className={`py-2.5 px-4 block w-full border rounded-full text-base sm:text-lg bg-white/90 dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400 dark:focus:ring-red-400 transition-colors duration-300 shadow-sm ${isSubmissionLocked
                     ? "border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900/60"
@@ -1035,6 +1043,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   onChange={handleFlagChange}
                   onKeyPress={handleKeyPress}
                   disabled={isSubmissionLocked}
+                  aria-invalid={isIncorrect}
                   maxLength={100}
                 />
                 <button
@@ -1047,17 +1056,22 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   onClick={handleSubmit}
                   disabled={isSubmissionLocked}
                 >
-                  {submitting
-                    ? "Submitting..."
-                    : isExpired
-                      ? "Expired"
-                      : isCorrect && !isPracticeMode
-                        ? "Solved!"
-                        : sessionStatus === "unauthenticated"
-                          ? "Login to Submit"
-                          : isPracticeMode
-                            ? "Submit (Practice)"
-                            : "Submit"}
+                  {submitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                      <span>Submitting...</span>
+                    </span>
+                  ) : isExpired ? (
+                    "Expired"
+                  ) : isCorrect && !isPracticeMode ? (
+                    "Solved!"
+                  ) : sessionStatus === "unauthenticated" ? (
+                    "Login to Submit"
+                  ) : isPracticeMode ? (
+                    "Submit (Practice)"
+                  ) : (
+                    "Submit"
+                  )}
                 </button>
 
                 {/* Time remaining display */}
