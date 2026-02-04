@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import botAvatar from "@/public/aichatbot.png";
+import { Loader2, SendHorizontal } from "lucide-react";
 
 type Msg = {
   id: string;
@@ -33,6 +34,16 @@ export default function FloatingChat({
   const [totalHintsUsed, setTotalHintsUsed] = useState(0);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus input when chat opens
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [isOpen]);
 
   // Load chat stats on mount
   useEffect(() => {
@@ -349,10 +360,16 @@ export default function FloatingChat({
           {/* Input */}
           <div className="p-4 bg-white border-t border-gray-200 flex-shrink-0">
             <div className="flex gap-2">
+              <label htmlFor="chat-input" className="sr-only">
+                Type your message
+              </label>
               <input
+                id="chat-input"
+                ref={inputRef}
                 className="flex-1 bg-gray-100 px-4 py-3 rounded-lg text-gray-800 outline-none focus:ring-2 focus:ring-red-500 focus:bg-white transition-all placeholder-gray-500 text-sm"
                 placeholder="Type your message..."
                 value={input}
+                autoComplete="off"
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
@@ -364,16 +381,14 @@ export default function FloatingChat({
               <button
                 onClick={() => sendMessage(input)}
                 disabled={loading || !input.trim()}
-                className="bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed px-5 py-3 rounded-lg text-white font-medium transition-all shadow-sm hover:shadow-md flex items-center justify-center"
+                aria-label="Send message"
+                className="bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed px-5 py-3 rounded-lg text-white font-medium transition-all shadow-sm hover:shadow-md flex items-center justify-center min-w-[56px]"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                </svg>
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <SendHorizontal className="h-5 w-5" />
+                )}
               </button>
             </div>
           </div>
