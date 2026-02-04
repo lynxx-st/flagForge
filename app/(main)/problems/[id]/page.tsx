@@ -14,6 +14,7 @@ import {
   ChevronDown,
   ExternalLink,
   Lightbulb,
+  Loader2,
   Trophy,
 } from "lucide-react";
 
@@ -420,6 +421,10 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
           }
         } else {
           setIsIncorrect(true);
+          setTimeout(() => {
+            setMessage(null);
+            setIsIncorrect(false);
+          }, 3000);
           setTimeout(
             () => (lastSubmittedFlag.current = ""),
             MIN_SUBMISSION_INTERVAL
@@ -428,6 +433,10 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       } else {
         setMessage(result.message || "An error occurred");
         setIsIncorrect(true);
+        setTimeout(() => {
+          setMessage(null);
+          setIsIncorrect(false);
+        }, 3000);
         setTimeout(
           () => (lastSubmittedFlag.current = ""),
           MIN_SUBMISSION_INTERVAL
@@ -1021,8 +1030,15 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   }`}
                 aria-busy={submitting}
               >
-                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Submit Flag</p>
+                <label
+                  htmlFor="flag-input"
+                  className="text-lg font-semibold text-gray-900 dark:text-gray-100 cursor-pointer"
+                >
+                  Submit Flag
+                </label>
                 <input
+                  id="flag-input"
+                  name="flag"
                   type="text"
                   className={`py-2.5 px-4 block w-full border rounded-full text-base sm:text-lg bg-white/90 dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400 dark:focus:ring-red-400 transition-colors duration-300 shadow-sm ${isSubmissionLocked
                     ? "border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900/60"
@@ -1036,7 +1052,15 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   onKeyPress={handleKeyPress}
                   disabled={isSubmissionLocked}
                   maxLength={100}
+                  aria-invalid={isIncorrect}
                 />
+
+                {isIncorrect && message && (
+                  <p className="text-sm font-medium text-red-600 dark:text-red-400 animate-in fade-in slide-in-from-top-1">
+                    {message}
+                  </p>
+                )}
+
                 <button
                   className={`w-full sm:w-[180px] border rounded-full px-4 py-2 text-white shadow-sm transition-colors duration-300 ${isSubmissionLocked
                     ? "bg-gray-400 border-gray-400 cursor-not-allowed"
@@ -1047,17 +1071,20 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   onClick={handleSubmit}
                   disabled={isSubmissionLocked}
                 >
-                  {submitting
-                    ? "Submitting..."
-                    : isExpired
-                      ? "Expired"
-                      : isCorrect && !isPracticeMode
-                        ? "Solved!"
-                        : sessionStatus === "unauthenticated"
-                          ? "Login to Submit"
-                          : isPracticeMode
-                            ? "Submit (Practice)"
-                            : "Submit"}
+                  {submitting ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Submitting...</span>
+                    </div>
+                  ) : isExpired
+                    ? "Expired"
+                    : isCorrect && !isPracticeMode
+                      ? "Solved!"
+                      : sessionStatus === "unauthenticated"
+                        ? "Login to Submit"
+                        : isPracticeMode
+                          ? "Submit (Practice)"
+                          : "Submit"}
                 </button>
 
                 {/* Time remaining display */}

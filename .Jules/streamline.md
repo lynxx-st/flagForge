@@ -1,5 +1,3 @@
-## 2024-07-25 - Provide Immediate Feedback for Invalid User Actions
-
-**Learning:** When a user action cannot be completed (e.g., submitting a form), the system must provide immediate, clear, and actionable feedback. Silently blocking an action, even with client-side validation, creates a confusing and frustrating user experience. Users are left wondering if the system is broken or if they did something wrong.
-
-**Action:** In any form or user input flow, always connect client-side validation logic directly to the UI. If a check fails, display a descriptive, temporary message that explains *why* the action was blocked and what the user should do next. This transforms a moment of friction into a moment of guidance, improving user confidence and flow.
+## 2026-02-04 - Enhance Flag Submission UX
+**Learning:** For asynchronous interactions like flag submission, providing immediate visual feedback by switching action icons to a loading spinner (e.g., `Loader2`) and disabling input fields prevents layout shift and duplicate submissions. Additionally, pairing a transient toast with a local error message near the focus area improves comprehension.
+**Action:** Always link labels to inputs using `htmlFor` and `id`, and use `aria-invalid` for error states. Synchronize the clearing of local error messages and state flags when using timeouts.
