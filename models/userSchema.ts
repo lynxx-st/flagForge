@@ -80,5 +80,8 @@ userSchema.statics.findUsersWithBadge = function(badgeName: string) {
   return this.find({ "customBadges.name": badgeName });
 };
 
+// Index for leaderboard sorting and rank calculation
+userSchema.index({ totalScore: -1 });
+
 const User = models.User || model("User", userSchema);
 export default User;
