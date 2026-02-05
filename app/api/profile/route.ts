@@ -23,70 +23,17 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // DEBUG: Get ALL user questions to see the structure
-    const allUserQuestions = await UserQuestionModel.find({ userId: user._id });
+    // Use countDocuments instead of fetching all records for better performance
+    const completedQuestions = await UserQuestionModel.countDocuments({
+      userId: user._id,
+    });
 
-    // DEBUG: Try different possible field names for completion
-    const possibleCompletionFields = [
-      "isCompleted",
-      "isSolved",
-      "solved",
-      "completed",
-      "status",
-      "isCorrect",
-      "success",
-    ];
-
-    // Check what fields exist in the records
-    if (allUserQuestions.length > 0) {
-      console.log(
-        "Available fields in UserQuestionModel:",
-        Object.keys(allUserQuestions[0].toObject())
-      );
-    }
-
-    // For now, let's use the original count while we debug
-    const completedQuestions = allUserQuestions.length;
-
-    // DEBUG: Try some possible queries to see which works
-    const testQueries = [];
-    for (const field of possibleCompletionFields) {
-      try {
-        const count = await UserQuestionModel.countDocuments({
-          userId: user._id,
-          [field]: true,
-        });
-        if (count > 0) {
-          testQueries.push({ field, count });
-        }
-      } catch (e) {
-        // Field doesn't exist, continue
-      }
-    }
-    console.log("Test queries with results:", testQueries);
-
-    // Try status-based queries
-    const statusTests = ["completed", "solved", "correct", "success"];
-    for (const status of statusTests) {
-      try {
-        const count = await UserQuestionModel.countDocuments({
-          userId: user._id,
-          status: status,
-        });
-        if (count > 0) {
-          testQueries.push({ field: "status", value: status, count });
-        }
-      } catch (e) {
-        // Continue
-      }
-    }
-
-    // Get all users to calculate rank
-    const allUsers = await UserSchema.find({})
-      .sort({ totalScore: -1 })
-      .select("_id totalScore");
+    // Efficient rank calculation: count users with higher score + 1
+    // This avoids fetching and sorting all users in memory, mitigating DoS risks
     const userRank =
-      allUsers.findIndex((u) => u._id.toString() === user._id.toString()) + 1;
+      (await UserSchema.countDocuments({
+        totalScore: { $gt: user.totalScore || 0 },
+      })) + 1;
 
     // Calculate level based on score
     const getLevel = (score: number): string => {
@@ -149,14 +96,6 @@ export async function GET(req: Request) {
       streak: getStreak(completedQuestions),
       createdAt: user.createdAt,
       customBadges: user.customBadges || [],
-      debug: {
-        totalUserQuestions: allUserQuestions.length,
-        testQueries,
-        availableFields:
-          allUserQuestions.length > 0
-            ? Object.keys(allUserQuestions[0].toObject())
-            : [],
-      },
     };
 
     return NextResponse.json(profileData, {
