@@ -72,6 +72,9 @@ const userSchema = new Schema<Users>(
   }
 );
 
+// Performance optimization: Index totalScore for fast leaderboard sorting and rank calculation
+userSchema.index({ totalScore: -1 });
+
 userSchema.methods.getBadgeCount = function() {
   return this.customBadges.length;
 };

@@ -18,6 +18,9 @@ const userQuestionSchema = new Schema<UserQuestion>(
     { timestamps: true }
 );
 
+// Performance optimization: Index userId for fast challenge completion lookups
+userQuestionSchema.index({ userId: 1 });
+
 const UserQuestionModel =
     mongoose.models.UserQuestion || model("UserQuestion", userQuestionSchema);
 

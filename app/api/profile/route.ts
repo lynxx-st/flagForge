@@ -4,6 +4,8 @@ import UserQuestionModel from "@/models/userQuestionSchema";
 import connect from "@/utils/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
+import { Users } from "@/interfaces";
+
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
@@ -17,76 +19,18 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get user data
-    const user = await UserSchema.findOne({ email: session.user?.email });
+    // Get user data - use lean() for performance since we don't need Mongoose document methods here
+    const user = await UserSchema.findOne({ email: session.user?.email }).lean() as (Users & { _id: any, createdAt: any }) | null;
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // DEBUG: Get ALL user questions to see the structure
-    const allUserQuestions = await UserQuestionModel.find({ userId: user._id });
-
-    // DEBUG: Try different possible field names for completion
-    const possibleCompletionFields = [
-      "isCompleted",
-      "isSolved",
-      "solved",
-      "completed",
-      "status",
-      "isCorrect",
-      "success",
-    ];
-
-    // Check what fields exist in the records
-    if (allUserQuestions.length > 0) {
-      console.log(
-        "Available fields in UserQuestionModel:",
-        Object.keys(allUserQuestions[0].toObject())
-      );
-    }
-
-    // For now, let's use the original count while we debug
-    const completedQuestions = allUserQuestions.length;
-
-    // DEBUG: Try some possible queries to see which works
-    const testQueries = [];
-    for (const field of possibleCompletionFields) {
-      try {
-        const count = await UserQuestionModel.countDocuments({
-          userId: user._id,
-          [field]: true,
-        });
-        if (count > 0) {
-          testQueries.push({ field, count });
-        }
-      } catch (e) {
-        // Field doesn't exist, continue
-      }
-    }
-    console.log("Test queries with results:", testQueries);
-
-    // Try status-based queries
-    const statusTests = ["completed", "solved", "correct", "success"];
-    for (const status of statusTests) {
-      try {
-        const count = await UserQuestionModel.countDocuments({
-          userId: user._id,
-          status: status,
-        });
-        if (count > 0) {
-          testQueries.push({ field: "status", value: status, count });
-        }
-      } catch (e) {
-        // Continue
-      }
-    }
-
-    // Get all users to calculate rank
-    const allUsers = await UserSchema.find({})
-      .sort({ totalScore: -1 })
-      .select("_id totalScore");
-    const userRank =
-      allUsers.findIndex((u) => u._id.toString() === user._id.toString()) + 1;
+    // Performance optimization: Use parallel queries for rank and completion count
+    // Use countDocuments with $gt for rank (O(log N) with index) instead of fetching all users (O(N))
+    const [userRank, completedQuestions] = await Promise.all([
+      UserSchema.countDocuments({ totalScore: { $gt: user.totalScore || 0 } }).then(count => count + 1),
+      UserQuestionModel.countDocuments({ userId: user._id })
+    ]);
 
     // Calculate level based on score
     const getLevel = (score: number): string => {
@@ -124,6 +68,7 @@ export async function GET(req: Request) {
       // Check if database image is valid
       if (
         dbImage &&
+        typeof dbImage === "string" &&
         dbImage.trim() !== "" &&
         dbImage !== "undefined" &&
         dbImage !== "null" &&
@@ -149,14 +94,6 @@ export async function GET(req: Request) {
       streak: getStreak(completedQuestions),
       createdAt: user.createdAt,
       customBadges: user.customBadges || [],
-      debug: {
-        totalUserQuestions: allUserQuestions.length,
-        testQueries,
-        availableFields:
-          allUserQuestions.length > 0
-            ? Object.keys(allUserQuestions[0].toObject())
-            : [],
-      },
     };
 
     return NextResponse.json(profileData, {
