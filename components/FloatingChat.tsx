@@ -33,6 +33,7 @@ export default function FloatingChat({
   const [totalHintsUsed, setTotalHintsUsed] = useState(0);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Load chat stats on mount
   useEffect(() => {
@@ -69,6 +70,32 @@ export default function FloatingChat({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  // Focus input when chat opens
+  useEffect(() => {
+    if (isOpen) {
+      // Small delay to ensure the component is rendered and visible
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  // Handle Escape key to close chat
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      window.addEventListener("keydown", handleEsc);
+    }
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, [isOpen]);
 
   async function sendMessage(msg: string) {
     if (!msg.trim()) return;
@@ -350,8 +377,10 @@ export default function FloatingChat({
           <div className="p-4 bg-white border-t border-gray-200 flex-shrink-0">
             <div className="flex gap-2">
               <input
+                ref={inputRef}
                 className="flex-1 bg-gray-100 px-4 py-3 rounded-lg text-gray-800 outline-none focus:ring-2 focus:ring-red-500 focus:bg-white transition-all placeholder-gray-500 text-sm"
                 placeholder="Type your message..."
+                aria-label="Message to hint assistant"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -364,6 +393,7 @@ export default function FloatingChat({
               <button
                 onClick={() => sendMessage(input)}
                 disabled={loading || !input.trim()}
+                aria-label="Send message"
                 className="bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed px-5 py-3 rounded-lg text-white font-medium transition-all shadow-sm hover:shadow-md flex items-center justify-center"
               >
                 <svg
