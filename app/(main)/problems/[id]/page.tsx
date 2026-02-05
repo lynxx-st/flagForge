@@ -86,6 +86,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   const [hintLoading, setHintLoading] = useState<boolean>(false);
   const [usedHints, setUsedHints] = useState<number[]>([]);
   const [hintCount, setHintCount] = useState<number>(0);
+  const [confirmingHintIndex, setConfirmingHintIndex] = useState<number | null>(null);
   const [practiceMode, setPracticeMode] = useState<boolean>(false);
   const [chatHintStats, setChatHintStats] = useState({
     totalPointsDeducted: 0,
@@ -257,6 +258,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
 
       const data = await response.json();
       setUsedHints((prev) => [...prev, hintIndex]);
+      setConfirmingHintIndex(null);
       setMessage(data.message);
 
       // Update user's total score if points were deducted
@@ -267,6 +269,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       }
     } catch (error) {
       console.error("Error requesting hint:", error);
+      setConfirmingHintIndex(null);
       setMessage(
         error instanceof Error ? error.message : "Failed to request hint"
       );
@@ -280,6 +283,8 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   const toggleHints = async () => {
     if (!showHint) {
       await fetchHints();
+    } else {
+      setConfirmingHintIndex(null);
     }
     setShowHint(!showHint);
   };
@@ -971,19 +976,42 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                                     <p className="text-gray-600 dark:text-gray-400 italic">
                                       {isPracticeMode
                                         ? "Hints are locked in practice mode."
+                                        : confirmingHintIndex === hintIdx
+                                        ? `Are you sure? This will deduct ${hint.pointsDeduction} points from your score.`
                                         : 'Click "Use Hint" to reveal this hint'}
                                     </p>
                                   )}
                                 </div>
                                 <div>
                                   {!isUsed && !isPracticeMode && (
-                                    <button
-                                      onClick={() => requestHint(hintIdx)}
-                                      disabled={hintLoading}
-                                      className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-1 rounded-full text-sm font-medium transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                      {hintLoading ? "..." : "Use Hint"}
-                                    </button>
+                                    <div className="flex gap-2">
+                                      {confirmingHintIndex === hintIdx ? (
+                                        <>
+                                          <button
+                                            onClick={() => requestHint(hintIdx)}
+                                            disabled={hintLoading}
+                                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-full text-xs font-medium transition-colors duration-300 disabled:opacity-50"
+                                          >
+                                            {hintLoading ? "..." : "Confirm"}
+                                          </button>
+                                          <button
+                                            onClick={() => setConfirmingHintIndex(null)}
+                                            disabled={hintLoading}
+                                            className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-1 rounded-full text-xs font-medium transition-colors duration-300 disabled:opacity-50"
+                                          >
+                                            Cancel
+                                          </button>
+                                        </>
+                                      ) : (
+                                        <button
+                                          onClick={() => setConfirmingHintIndex(hintIdx)}
+                                          disabled={hintLoading}
+                                          className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-1 rounded-full text-sm font-medium transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                          {hintLoading ? "..." : "Use Hint"}
+                                        </button>
+                                      )}
+                                    </div>
                                   )}
                                   {!isUsed && isPracticeMode && (
                                     <span className="text-xs font-medium text-rose-600 dark:text-rose-300">
@@ -1021,8 +1049,9 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   }`}
                 aria-busy={submitting}
               >
-                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Submit Flag</p>
+                <label htmlFor="flag-input" className="text-lg font-semibold text-gray-900 dark:text-gray-100">Submit Flag</label>
                 <input
+                  id="flag-input"
                   type="text"
                   className={`py-2.5 px-4 block w-full border rounded-full text-base sm:text-lg bg-white/90 dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400 dark:focus:ring-red-400 transition-colors duration-300 shadow-sm ${isSubmissionLocked
                     ? "border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900/60"
@@ -1035,6 +1064,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   onChange={handleFlagChange}
                   onKeyPress={handleKeyPress}
                   disabled={isSubmissionLocked}
+                  aria-invalid={isIncorrect}
                   maxLength={100}
                 />
                 <button
