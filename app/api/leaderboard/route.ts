@@ -10,32 +10,49 @@ export async function GET() {
     // Connect to the database
     await connect();
 
-    // Fetch top 50 users sorted by totalScore in descending order
-    const users = await User.find({})
-      .sort({ totalScore: -1 })
-      .limit(50) // Limit to top 50 users
-      .select("name totalScore image _id");
+    // Use aggregation to fetch top 50 users and count their completed questions in a single query.
+    // This optimization replaces the N+1 query pattern (51 queries) with a single database round-trip.
+    // We use a sub-pipeline in $lookup to count completed questions on the database side for better memory efficiency.
+    const leaderboardData = await User.aggregate([
+      { $sort: { totalScore: -1 } },
+      { $limit: 50 },
+      {
+        $lookup: {
+          from: UserQuestionModel.collection.name,
+          let: { userId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$userId", "$$userId"] } } },
+            { $count: "count" },
+          ],
+          as: "completedCount",
+        },
+      },
+      {
+        $addFields: {
+          roomsCompleted: {
+            $ifNull: [{ $arrayElemAt: ["$completedCount.count", 0] }, 0],
+          },
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          totalScore: 1,
+          image: 1,
+          roomsCompleted: 1,
+        },
+      },
+    ]);
 
-    // Calculate roomsCompleted for each user
-    const leaderboardPromises = users.map(async (user, index) => {
-      // Count completed questions for this user
-      // Remove the completion filter for now until we debug it properly
-      const roomsCompleted = await UserQuestionModel.countDocuments({
-        userId: user._id,
-      });
-
-      return {
-        name: user.name,
-        totalScore: user.totalScore,
-        image: user.image,
-        roomsCompleted,
-        rank: index + 1, // Rank starts from 1
-        slug: user.name.replace(/\s+/g, "-"),
-      };
-    });
-
-    // Wait for all promises to resolve
-    const leaderboard = await Promise.all(leaderboardPromises);
+    // Map the results to include rank and slug, ensuring the same format as before.
+    const leaderboard = leaderboardData.map((user, index) => ({
+      name: user.name,
+      totalScore: user.totalScore,
+      image: user.image,
+      roomsCompleted: user.roomsCompleted,
+      rank: index + 1, // Rank starts from 1
+      slug: (user.name || "").replace(/\s+/g, "-"),
+    }));
 
     // Return the leaderboard as JSON
     return NextResponse.json(leaderboard);

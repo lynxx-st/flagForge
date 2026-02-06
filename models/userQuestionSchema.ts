@@ -18,6 +18,9 @@ const userQuestionSchema = new Schema<UserQuestion>(
     { timestamps: true }
 );
 
+// Index userId to optimize aggregation lookups and queries by user
+userQuestionSchema.index({ userId: 1 });
+
 const UserQuestionModel =
     mongoose.models.UserQuestion || model("UserQuestion", userQuestionSchema);
 
