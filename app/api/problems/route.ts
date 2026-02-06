@@ -176,8 +176,8 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("Error creating challenge:", error);
     return NextResponse.json(
-      { message: error?.message || "Failed to create challenge" },
-      { status: HttpStatusCode.BadRequest }
+      { message: "Failed to create challenge" },
+      { status: HttpStatusCode.InternalServerError }
     );
   }
 }
@@ -279,6 +279,10 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    return NextResponse.json({ error });
+    console.error("Error fetching problems:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: HttpStatusCode.InternalServerError }
+    );
   }
 }
