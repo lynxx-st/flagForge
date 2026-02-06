@@ -91,6 +91,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     totalPointsDeducted: 0,
     totalHintsUsed: 0,
   });
+  const [confirmingHintIndex, setConfirmingHintIndex] = useState<number | null>(null);
 
   // Duplicate prevention refs
   const lastSubmissionTime = useRef<number>(0);
@@ -459,6 +460,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     setFlag(e.target.value);
     if (isIncorrect) {
       setIsIncorrect(false);
+      setMessage(null);
     }
   };
 
@@ -977,13 +979,35 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                                 </div>
                                 <div>
                                   {!isUsed && !isPracticeMode && (
-                                    <button
-                                      onClick={() => requestHint(hintIdx)}
-                                      disabled={hintLoading}
-                                      className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-1 rounded-full text-sm font-medium transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                      {hintLoading ? "..." : "Use Hint"}
-                                    </button>
+                                    confirmingHintIndex === hintIdx ? (
+                                      <div className="flex flex-col sm:flex-row gap-2">
+                                        <button
+                                          onClick={() => {
+                                            requestHint(hintIdx);
+                                            setConfirmingHintIndex(null);
+                                          }}
+                                          disabled={hintLoading}
+                                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-full text-xs font-bold transition-colors whitespace-nowrap shadow-sm"
+                                        >
+                                          Confirm {hint.pointsDeduction && Number(hint.pointsDeduction) > 0 ? `(-${hint.pointsDeduction})` : ""}
+                                        </button>
+                                        <button
+                                          onClick={() => setConfirmingHintIndex(null)}
+                                          disabled={hintLoading}
+                                          className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-3 py-1 rounded-full text-xs font-bold transition-colors shadow-sm"
+                                        >
+                                          Cancel
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        onClick={() => setConfirmingHintIndex(hintIdx)}
+                                        disabled={hintLoading}
+                                        className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-1 rounded-full text-sm font-medium transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                                      >
+                                        {hintLoading ? "..." : "Use Hint"}
+                                      </button>
+                                    )
                                   )}
                                   {!isUsed && isPracticeMode && (
                                     <span className="text-xs font-medium text-rose-600 dark:text-rose-300">
