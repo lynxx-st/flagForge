@@ -211,8 +211,8 @@ export async function GET(request: NextRequest) {
       baseQuery = { category: category };
     }
 
-    // Build the query with category filter
-    let query = QuestionModel.find(baseQuery).select("-flag");
+    // Build the query with category filter - exclude sensitive fields
+    let query = QuestionModel.find(baseQuery).select("-flag -hints -uploadedBy");
 
     // Add sorting - newest first by default
     query = query.sort({ createdAt: -1 });
@@ -279,6 +279,10 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    return NextResponse.json({ error });
+    console.error("Error fetching challenges:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
