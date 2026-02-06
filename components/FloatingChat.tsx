@@ -33,6 +33,7 @@ export default function FloatingChat({
   const [totalHintsUsed, setTotalHintsUsed] = useState(0);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Load chat stats on mount
   useEffect(() => {
@@ -69,6 +70,32 @@ export default function FloatingChat({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  // Auto-focus input when chat opens
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (isOpen) {
+      timeoutId = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [isOpen]);
+
+  // Close chat on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
 
   async function sendMessage(msg: string) {
     if (!msg.trim()) return;
@@ -350,6 +377,9 @@ export default function FloatingChat({
           <div className="p-4 bg-white border-t border-gray-200 flex-shrink-0">
             <div className="flex gap-2">
               <input
+                ref={inputRef}
+                id="chat-input"
+                aria-label="Type your message"
                 className="flex-1 bg-gray-100 px-4 py-3 rounded-lg text-gray-800 outline-none focus:ring-2 focus:ring-red-500 focus:bg-white transition-all placeholder-gray-500 text-sm"
                 placeholder="Type your message..."
                 value={input}
@@ -364,6 +394,7 @@ export default function FloatingChat({
               <button
                 onClick={() => sendMessage(input)}
                 disabled={loading || !input.trim()}
+                aria-label="Send message"
                 className="bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed px-5 py-3 rounded-lg text-white font-medium transition-all shadow-sm hover:shadow-md flex items-center justify-center"
               >
                 <svg
