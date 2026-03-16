@@ -6,6 +6,7 @@ import type {
   PartialBlockObjectResponse,
 } from "@notionhq/client/build/src/api-endpoints";
 import JsonLd from "@/components/JsonLd";
+import { siteConfig } from "@/lib/seo";
 import BlogPostClient from "./BlogPostClient";
 
 export const revalidate = 300;
@@ -228,13 +229,13 @@ export async function generateMetadata({
     description,
     keywords,
     alternates: {
-      canonical: `/blogs/${canonicalSlug}`,
+      canonical: `${siteConfig.blogUrl}/${canonicalSlug}`,
     },
     openGraph: {
       title: post.title,
       description,
       type: "article",
-      url: `/blogs/${canonicalSlug}`,
+      url: `${siteConfig.blogUrl}/${canonicalSlug}`,
       images: imageUrl ? [{ url: imageUrl, alt: post.title }] : [],
     },
     twitter: {
@@ -254,8 +255,7 @@ export default async function BlogPostPage({
   const { id } = await params;
   const post = await fetchBlogPost(id);
   const postSlug = post?.slug || id;
-  const seoImage =
-    post?.cover || post?.thumbnail || post?.image || "https://flagforgectf.com/flagforge-logo.png";
+  const seoImage = post?.cover || post?.thumbnail || post?.image || siteConfig.ogImage;
   const wordCount = post?.content
     ? post.content.split(/\s+/).filter(Boolean).length
     : undefined;
@@ -286,18 +286,18 @@ export default async function BlogPostPage({
                 name: "FlagForge",
                 logo: {
                   "@type": "ImageObject",
-                  url: "https://flagforgectf.com/flagforge-logo.png",
+                  url: siteConfig.ogImage,
                 },
               },
               mainEntityOfPage: {
                 "@type": "WebPage",
-                "@id": `https://flagforgectf.com/blogs/${postSlug}`,
+                "@id": `${siteConfig.blogUrl}/${postSlug}`,
               },
               keywords: post.tags?.join(", ") || "",
               isPartOf: {
                 "@type": "Blog",
                 name: "FlagForge Blog",
-                url: "https://flagforgectf.com/blogs",
+                url: siteConfig.blogUrl,
               },
             }}
           />
@@ -310,19 +310,19 @@ export default async function BlogPostPage({
                   "@type": "ListItem",
                   position: 1,
                   name: "Home",
-                  item: "https://flagforgectf.com/",
+                  item: `${siteConfig.url}/`,
                 },
                 {
                   "@type": "ListItem",
                   position: 2,
                   name: "Blogs",
-                  item: "https://flagforgectf.com/blogs",
+                  item: siteConfig.blogUrl,
                 },
                 {
                   "@type": "ListItem",
                   position: 3,
                   name: post.title,
-                  item: `https://flagforgectf.com/blogs/${postSlug}`,
+                  item: `${siteConfig.blogUrl}/${postSlug}`,
                 },
               ],
             }}

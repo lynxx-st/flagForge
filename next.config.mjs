@@ -4,11 +4,19 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "writeup.flagforge.xyz",
+      },
+      {
+        protocol: "https",
         hostname: "writeup.flagforgectf.com",
       },
       {
         protocol: "https",
         hostname: "flagforgectf.com",
+      },
+      {
+        protocol: "https",
+        hostname: "blogs.flagforgectf.com",
       },
       {
         protocol: "https",
@@ -32,7 +40,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "*.fbcdn.net",
+        hostname: "**.fbcdn.net",
       },
       {
         protocol: "https",
@@ -63,6 +71,15 @@ const nextConfig = {
           {
             key: "Vary",
             value: "Accept-Encoding",
+          },
+        ],
+      },
+      {
+        source: "/robots.txt",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, must-revalidate",
           },
         ],
       },

@@ -20,7 +20,7 @@ FlagForge is a premier Capture The Flag (CTF) platform designed to host, manage,
 - [Home](https://flagforgectf.com/): Landing page and overview.
 - [Challenges](https://flagforgectf.com/problems): List of available CTF challenges.
 - [Leaderboard](https://flagforgectf.com/leaderboard): Global rankings.
-- [Blogs](https://flagforgectf.com/blogs): Cybersecurity tutorials and news.
+- [Blogs](https://blogs.flagforgectf.com): Cybersecurity tutorials and news.
 - [Resources](https://flagforgectf.com/resources): Educational materials and tools.
 - [About](https://flagforgectf.com/about): Information about FlagForge.
 - [Contact](https://flagforgectf.com/contact): Support and inquiries.

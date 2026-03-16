@@ -7,33 +7,35 @@ import {
   Send,
   Home
 } from "lucide-react";
+import { siteConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Contact Us - FlagForge CTF Platform",
+  title: "Contact FlagForge | CTF Support and Cybersecurity Collaboration",
   description:
-    "Contact FlagForge for CTF support and cybersecurity inquiries via email, phone, or our Lalitpur office.",
+    "Contact FlagForge for platform support, partnerships, CTF collaboration, or general cybersecurity learning inquiries.",
   keywords: [
     "contact FlagForge",
-    "CTF support",
-    "cybersecurity help",
-    "FlagForge team",
-    "Nepal cybersecurity support",
-    "Nepal CTF community",
+    "FlagForge support",
+    "CTF platform contact",
+    "cybersecurity collaboration",
+    "Nepal cybersecurity community",
   ],
   authors: [{ name: "FlagForge Team" }],
   openGraph: {
-    title: "Contact FlagForge - Get in Touch",
+    title: "Contact FlagForge | CTF Support and Cybersecurity Collaboration",
     description:
-      "Contact the FlagForge team for inquiries, support, or collaboration opportunities.",
-    url: "https://flagforgectf.com/contact",
+      "Contact the FlagForge team for platform support, partnerships, or cybersecurity collaboration.",
+    url: `${siteConfig.url}/contact`,
     type: "website",
-    siteName: "FlagForge",
+    siteName: siteConfig.name,
     locale: "en_US",
+    images: [{ url: siteConfig.ogImage, alt: "Contact FlagForge" }],
   },
   twitter: {
-    card: "summary",
-    title: "Contact FlagForge - Get in Touch",
+    card: "summary_large_image",
+    title: "Contact FlagForge | CTF Support and Cybersecurity Collaboration",
     description: "Reach out to the FlagForge team for support, inquiries, or collaboration.",
+    images: [siteConfig.ogImage],
   },
   alternates: {
     canonical: "/contact",
@@ -47,31 +49,24 @@ export const metadata: Metadata = {
 export default function Contact() {
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-950 dark:text-white pb-16 relative overflow-hidden flex items-center justify-center p-4 lg:p-8">
-
-      {/* Background Effects */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-5%] right-[-2%] w-[30%] h-[30%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[100px]" />        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02] dark:opacity-[0.04]" />
+        <div className="absolute bottom-[-5%] right-[-2%] w-[30%] h-[30%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[100px]" />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02] dark:opacity-[0.04]" />
       </div>
 
       <div className="relative z-10 w-[80%] animate-in fade-in zoom-in-95 duration-700">
-
-        {/* Compact Glass Dashboard */}
         <div className="relative bg-white/70 dark:bg-white/[0.02] backdrop-blur-3xl border border-white dark:border-white/10 rounded-[2.5rem] lg:rounded-[3.5rem] shadow-2xl shadow-black/5 overflow-hidden">
-
           <div className="grid lg:grid-cols-[0.9fr_1.1fr]">
-
-            {/* Left Column: Header & Info */}
             <div className="p-8 lg:p-16 bg-gray-50/50 dark:bg-white/[0.01] border-b lg:border-b-0 lg:border-r border-gray-100 dark:border-white/5 space-y-12">
-
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-7xl font-black tracking-tighter leading-none text-gray-900 dark:text-white">
-                  Contact <span className="text-red-500">Us</span>
+                  Contact <span className="text-red-500">FlagForge</span>
                 </h1>
                 <p className="text-base font-medium text-gray-500 dark:text-gray-400 max-w-sm">
-                  Get in touch with us. We'd love to hear from you!
+                  Reach the team for platform support, partnership conversations, and CTF or cybersecurity learning inquiries.
                 </p>
-                <h3 className="sr-only">FlagForge Contact Details</h3>
+                <h3 className="sr-only">FlagForge contact details</h3>
                 <h4 className="sr-only">Email, phone, and office location</h4>
               </div>
 
@@ -79,7 +74,7 @@ export default function Contact() {
                 <h2 className="text-xs font-black uppercase tracking-[0.3em] text-red-500/80">Get in Touch</h2>
                 <div className="grid gap-8">
                   {[
-                    { icon: Mail, label: "Email", value: "info@flagforgectf.com", href: "mailto:info@flagforgectf.com" },
+                    { icon: Mail, label: "Email", value: "info@flagforge.xyz", href: "mailto:info@flagforge.xyz" },
                     { icon: Phone, label: "Phone", value: "+977 9828137085", href: "tel:+9779828137085" },
                     { icon: MapPin, label: "Address", value: "Lalitpur, 44600" }
                   ].map((item, idx) => (
@@ -108,10 +103,9 @@ export default function Contact() {
               </div>
             </div>
 
-            {/* Right Column: Contact Form */}
             <div className="p-8 lg:p-16 space-y-10">
               <h2 className="text-3xl font-black tracking-tighter text-gray-900 dark:text-white uppercase">
-                Send us a Message
+                Send Us a Message
               </h2>
 
               <form className="space-y-8">
@@ -155,7 +149,6 @@ export default function Contact() {
                 </button>
               </form>
             </div>
-
           </div>
         </div>
       </div>

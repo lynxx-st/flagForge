@@ -6,25 +6,33 @@ export const generateMetadata = ({
 }: {
   params: { username: string };
 }): Metadata => ({
-  title: "FlagForge User Profile",
+  title: `${params.username} | FlagForge profile`,
   description:
-    "View FlagForge user profiles with CTF rank, badges, and cybersecurity achievements.",
+    "Public FlagForge profile pages are available for sharing, but are excluded from search indexing to keep discovery focused on FlagForge learning content.",
   alternates: {
     canonical: `/user/${params.username}`,
   },
+  robots: {
+    index: false,
+    follow: true,
+    googleBot: {
+      index: false,
+      follow: true,
+    },
+  },
   openGraph: {
-    title: "FlagForge User Profile",
+    title: `${params.username} | FlagForge profile`,
     description:
-      "View FlagForge user profiles with CTF rank, badges, and cybersecurity achievements.",
+      "View a public FlagForge profile with badges, challenge activity, and CTF achievements.",
     url: `https://flagforgectf.com/user/${params.username}`,
     type: "profile",
     siteName: "FlagForge",
   },
   twitter: {
     card: "summary",
-    title: "FlagForge User Profile",
+    title: `${params.username} | FlagForge profile`,
     description:
-      "View FlagForge user profiles with CTF rank, badges, and cybersecurity achievements.",
+      "Public FlagForge profile with badges, challenge activity, and CTF achievements.",
   },
 });
 

@@ -4,31 +4,29 @@ export const NavbarData: NavbarItems[] = [
   {
     href: "/home",
     tags: "Home",
-    style: undefined
+    style: undefined,
   },
   {
     href: "/problems",
     tags: "Problems",
-    style: undefined
+    style: undefined,
   },
   {
     href: "/leaderboard",
     tags: "Leaderboard",
-    style: undefined
+    style: undefined,
   },
   {
     href: "/archives",
     tags: "Archives",
-    style: undefined
+    style: undefined,
   },
   {
-    href: "https://blog.flagforgectf.com",
+    href: "https://blogs.flagforgectf.com",
     tags: "Blogs",
-    style: undefined
+    style: undefined,
   },
 ];
-
-
 
 const ctfQuestions: Questions[] = [
   {
@@ -39,7 +37,7 @@ const ctfQuestions: Questions[] = [
     points: 300,
     flag: "REVERSE_FLAG",
     isSolved: false,
-    done: false
+    done: false,
   },
   {
     title: "Web Exploitation",
@@ -48,7 +46,7 @@ const ctfQuestions: Questions[] = [
     points: 200,
     flag: "WEB_FLAG",
     isSolved: false,
-    done: false
+    done: false,
   },
   {
     title: "Forensics",
@@ -57,7 +55,7 @@ const ctfQuestions: Questions[] = [
     points: 150,
     flag: "FORENSICS_FLAG",
     isSolved: false,
-    done: false
+    done: false,
   },
   {
     title: "Crypto Challenge",
@@ -66,7 +64,7 @@ const ctfQuestions: Questions[] = [
     points: 250,
     flag: "CRYPTO_FLAG",
     isSolved: false,
-    done: false
+    done: false,
   },
   {
     title: "Steganography",
@@ -75,7 +73,7 @@ const ctfQuestions: Questions[] = [
     points: 200,
     flag: "STEGANOGRAPHY_FLAG",
     isSolved: false,
-    done: false
+    done: false,
   },
   {
     title: "Network Security",
@@ -84,16 +82,13 @@ const ctfQuestions: Questions[] = [
     points: 300,
     flag: "NETWORK_FLAG",
     isSolved: false,
-    done: false
+    done: false,
   },
 ];
 
-
 const dummyQuestions: Questions[] = ctfQuestions;
 
-
 export default dummyQuestions;
-
 
 export const initialQuestion: Questions = {
   title: "",
@@ -102,5 +97,5 @@ export const initialQuestion: Questions = {
   points: 0,
   flag: "",
   isSolved: false,
-  done: false
+  done: false,
 };

@@ -22,21 +22,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/context/ThemeContext";
 import {
-  Home,
-  Terminal,
-  Trophy,
+  Archive,
+  ArrowRight,
   BookText,
+  Home,
+  LayoutDashboard,
   LogIn,
   LogOut,
-  User as UserIcon,
   ShieldCheck,
-  LayoutDashboard,
-  ArrowRight,
-  Archive
+  Terminal,
+  Trophy,
 } from "lucide-react";
 
 const NavItem = ({ href, tags, onClick, style }: NavbarItems) => {
-  const isExternal = href.startsWith('http');
+  const isExternal = href.startsWith("http");
 
   return (
     <li onClick={onClick}>
@@ -112,7 +111,6 @@ const Navbar: React.FC = () => {
     let active = true;
     const loadUserData = async () => {
       try {
-        // Load user profile data
         const profileResponse = await fetch("/api/profile");
         if (profileResponse.ok) {
           const data = await profileResponse.json();
@@ -124,13 +122,12 @@ const Navbar: React.FC = () => {
           if (active) setStanding(nextStanding);
         }
 
-        // Load user role data
         const roleResponse = await fetch("/api/user/role");
         if (roleResponse.ok) {
           const roleData = await roleResponse.json();
           if (active) setIsAdmin(roleData.isAdmin || false);
         }
-      } catch (error) {
+      } catch {
         if (active) {
           setStanding("");
           setIsAdmin(false);
@@ -153,7 +150,7 @@ const Navbar: React.FC = () => {
               <div className="absolute inset-0 bg-red-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
               <Image
                 src={logo}
-                alt="logo"
+                alt="FlagForge logo"
                 height={40}
                 width={40}
                 className="relative h-8 w-8 md:h-10 md:w-10 object-contain"
@@ -165,12 +162,10 @@ const Navbar: React.FC = () => {
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8 lg:gap-12">
           <ul className="flex items-center gap-1 lg:gap-2">
-            {/* Show navigation based on authentication status */}
             {NavbarData
-              .filter(item => session.status === "authenticated" || item.tags !== "Home")
+              .filter((item) => session.status === "authenticated" || item.tags !== "Home")
               .map(({ href, tags }: NavbarItems) => (
                 <NavItem
                   key={href}
@@ -182,7 +177,6 @@ const Navbar: React.FC = () => {
           </ul>
 
           <div className="flex items-center gap-4 lg:gap-6 ml-4 pl-4 border-l border-gray-100 dark:border-white/10">
-            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
               className="p-2.5 rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-300 active:scale-90"
@@ -192,17 +186,13 @@ const Navbar: React.FC = () => {
                 <SunIcon
                   className={cn(
                     "absolute h-full w-full transition-all duration-300",
-                    theme === "dark"
-                      ? "rotate-0 scale-100"
-                      : "-rotate-90 scale-0"
+                    theme === "dark" ? "rotate-0 scale-100" : "-rotate-90 scale-0"
                   )}
                 />
                 <MoonIcon
                   className={cn(
                     "absolute h-full w-full transition-all duration-300",
-                    theme === "dark"
-                      ? "rotate-90 scale-0"
-                      : "rotate-0 scale-100"
+                    theme === "dark" ? "rotate-90 scale-0" : "rotate-0 scale-100"
                   )}
                 />
               </div>
@@ -272,7 +262,6 @@ const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation Toggle */}
         <div className="md:hidden flex items-center gap-4">
           <button
             onClick={toggleTheme}
@@ -311,27 +300,33 @@ const Navbar: React.FC = () => {
               </SheetDescription>
               <div className="flex flex-col h-full">
                 <div className="p-8 border-b border-gray-100 dark:border-white/5 flex items-center gap-3">
-                  <Image src={logo} alt="logo" height={40} width={40} />
+                  <Image src={logo} alt="FlagForge logo" height={40} width={40} />
                   <span className="text-2xl font-black text-gray-950 dark:text-white tracking-tighter">FlagForge</span>
                 </div>
 
                 <nav className="flex-1 p-6">
                   <ul className="space-y-4">
-                    {/* Show navigation based on authentication status */}
                     {NavbarData
-                      .filter(item => session.status === "authenticated" || item.tags !== "Home")
+                      .filter((item) => session.status === "authenticated" || item.tags !== "Home")
                       .map(({ href, tags }: NavbarItems) => {
                         const getIcon = (tag: string) => {
                           switch (tag.toLowerCase()) {
-                            case "home": return <Home className="w-5 h-5" />;
-                            case "problems": return <Terminal className="w-5 h-5" />;
-                            case "leaderboard": return <Trophy className="w-5 h-5" />;
-                            case "archives": return <Archive className="w-5 h-5" />;
-                            case "blogs": return <BookText className="w-5 h-5" />;
-                            default: return <Terminal className="w-5 h-5" />;
+                            case "home":
+                              return <Home className="w-5 h-5" />;
+                            case "problems":
+                              return <Terminal className="w-5 h-5" />;
+                            case "leaderboard":
+                              return <Trophy className="w-5 h-5" />;
+                            case "archives":
+                              return <Archive className="w-5 h-5" />;
+                            case "blogs":
+                              return <BookText className="w-5 h-5" />;
+                            default:
+                              return <Terminal className="w-5 h-5" />;
                           }
                         };
-                        const isExternal = href.startsWith('http');
+
+                        const isExternal = href.startsWith("http");
                         return (
                           <li key={href}>
                             <Link
@@ -350,7 +345,6 @@ const Navbar: React.FC = () => {
                         );
                       })}
 
-                    {/* Show sign in/up button for unauthenticated users */}
                     {session.status === "unauthenticated" && (
                       <li className="pt-6">
                         <Link
