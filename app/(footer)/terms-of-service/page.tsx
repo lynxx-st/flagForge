@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: "FlagForge Terms of Service",
     description:
       "Review the terms and conditions for using FlagForge CTF platform. Clear guidelines for fair and secure participation.",
-    url: "https://flagforge.xyz/terms-of-service",
+    url: "https://flagforgectf.com/terms-of-service",
     type: "website",
     siteName: "FlagForge",
     locale: "en_US",

@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     title: "FlagForge Privacy Policy",
     description:
       "Understand how FlagForge handles your data with transparency and security. Your privacy is our priority.",
-    url: "https://flagforge.xyz/privacy-policy",
+    url: "https://flagforgectf.com/privacy-policy",
     type: "website",
     siteName: "FlagForge",
     locale: "en_US",

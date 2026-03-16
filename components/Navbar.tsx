@@ -28,8 +28,6 @@ import {
   BookText,
   LogIn,
   LogOut,
-  User as UserIcon,
-  ShieldCheck,
   LayoutDashboard,
   ArrowRight
 } from "lucide-react";
@@ -132,7 +130,7 @@ const Navbar: React.FC = () => {
               <div className="absolute inset-0 bg-red-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
               <Image
                 src={logo}
-                alt="logo"
+                alt="FlagForge logo"
                 height={40}
                 width={40}
                 className="relative h-8 w-8 md:h-10 md:w-10 object-contain"
@@ -159,8 +157,7 @@ const Navbar: React.FC = () => {
             ) : (
               <li>
                 <Link
-                  href="https://blogs.flagforge.xyz"
-                  target="_blank"
+                  href="https://blogs.flagforgectf.com"
                   className="px-5 py-2.5 text-sm font-bold uppercase tracking-widest text-gray-600 dark:text-gray-400 hover:text-red-500 transition-colors"
                 >
                   Blogs
@@ -291,7 +288,7 @@ const Navbar: React.FC = () => {
               </SheetDescription>
               <div className="flex flex-col h-full">
                 <div className="p-8 border-b border-gray-100 dark:border-white/5 flex items-center gap-3">
-                  <Image src={logo} alt="logo" height={40} width={40} />
+                  <Image src={logo} alt="FlagForge logo" height={40} width={40} />
                   <span className="text-2xl font-black text-gray-950 dark:text-white tracking-tighter">FlagForge</span>
                 </div>
 
@@ -327,8 +324,7 @@ const Navbar: React.FC = () => {
                       <>
                         <li>
                           <Link
-                            href="https://blogs.flagforge.xyz"
-                            target="_blank"
+                            href="https://blogs.flagforgectf.com"
                             onClick={handleMobileItemClick}
                             className="flex items-center gap-4 px-6 py-4 text-lg font-bold text-gray-700 dark:text-gray-300 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-transparent hover:border-gray-100 dark:hover:border-white/10"
                           >

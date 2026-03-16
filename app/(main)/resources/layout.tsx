@@ -1,26 +1,29 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { siteConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Learning Resources",
+  title: "FlagForge Resources | CTF Learning Materials and Security Study Guides",
   description:
-    "Explore FlagForge learning resources and CTF training materials organized by category to build cybersecurity skills.",
+    "Explore FlagForge resources for capture the flag preparation, cybersecurity study paths, curated tools, and practical learning materials.",
   alternates: {
     canonical: "/resources",
   },
   openGraph: {
-    title: "Learning Resources - FlagForge",
+    title: "FlagForge Resources | CTF Learning Materials and Security Study Guides",
     description:
-      "Explore FlagForge learning resources and CTF training materials organized by category to build cybersecurity skills.",
-    url: "https://flagforge.xyz/resources",
+      "Explore FlagForge resources for capture the flag preparation, cybersecurity study paths, curated tools, and practical learning materials.",
+    url: `${siteConfig.url}/resources`,
     type: "website",
-    siteName: "FlagForge",
+    siteName: siteConfig.name,
+    images: [{ url: siteConfig.ogImage, alt: "FlagForge Resources" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Learning Resources - FlagForge",
+    title: "FlagForge Resources | CTF Learning Materials and Security Study Guides",
     description:
-      "Explore FlagForge learning resources and CTF training materials organized by category to build cybersecurity skills.",
+      "Explore FlagForge resources for capture the flag preparation, cybersecurity study paths, curated tools, and practical learning materials.",
+    images: [siteConfig.ogImage],
   },
 };
 

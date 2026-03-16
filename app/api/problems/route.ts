@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     ) {
       const product = await QuestionModel.create(body);
       await product.save();
-      const challengeLink = `https://flagforge.xyz/problems/${product._id}`;
+      const challengeLink = `https://flagforgectf.com/problems/${product._id}`;
 
       // Send Discord notification
       await sendDiscordNotification(

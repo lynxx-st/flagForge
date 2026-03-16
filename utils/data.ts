@@ -17,13 +17,11 @@ export const NavbarData: NavbarItems[] = [
     style: undefined
   },
   {
-    href: "https://blogs.flagforge.xyz",
+    href: "https://blogs.flagforgectf.com",
     tags: "Blogs",
     style: undefined
   },
 ];
-
-
 
 const ctfQuestions: Questions[] = [
   {
@@ -83,12 +81,9 @@ const ctfQuestions: Questions[] = [
   },
 ];
 
-
 const dummyQuestions: Questions[] = ctfQuestions;
 
-
 export default dummyQuestions;
-
 
 export const initialQuestion: Questions = {
   title: "",

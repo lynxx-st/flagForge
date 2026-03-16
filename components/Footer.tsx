@@ -10,14 +10,14 @@ export default function Footer() {
       name: "LinkedIn",
       url: "https://www.linkedin.com/company/flagforge/",
       icon: <Linkedin className="w-5 h-5 pointer-events-none" />,
-      color: "hover:text-[#0077b5] dark:hover:text-[#38b6ff]", // Lighter blue for dark mode visibility
+      color: "hover:text-[#0077b5] dark:hover:text-[#38b6ff]",
       bg: "hover:bg-[#0077b5]/10 dark:hover:bg-[#38b6ff]/15",
     },
     {
       name: "Instagram",
       url: "https://www.instagram.com/flag.forge/",
       icon: <Instagram className="w-5 h-5 pointer-events-none" />,
-      color: "hover:text-[#e4405f] dark:hover:text-[#ff4d6d]", // Lighter pink for dark mode visibility
+      color: "hover:text-[#e4405f] dark:hover:text-[#ff4d6d]",
       bg: "hover:bg-[#e4405f]/10 dark:hover:bg-[#ff4d6d]/15",
     },
     {
@@ -30,27 +30,24 @@ export default function Footer() {
   ];
 
   const footerLinks = [
-    { name: "About", href: "/about" },
-    { name: "Resources", href: "/resources" },
-    { name: "Contact", href: "/contact" },
-    { name: "Privacy Policy", href: "/privacy-policy" },
-    { name: "Licensing", href: "/licensing" },
+    { name: "About FlagForge", href: "/about", label: "Learn about FlagForge and our cybersecurity mission" },
+    { name: "CTF Resources", href: "/resources", label: "Browse FlagForge cybersecurity resources and study materials" },
+    { name: "Contact FlagForge", href: "/contact", label: "Contact the FlagForge team" },
+    { name: "Privacy Policy", href: "/privacy-policy", label: "Read the FlagForge privacy policy" },
+    { name: "Licensing", href: "/licensing", label: "Read FlagForge licensing information" },
   ];
 
   return (
     <footer className="bg-white dark:bg-[#050505] border-t border-gray-100 dark:border-white/5 transition-colors duration-500 overflow-hidden">
       <div className="w-[92%] lg:w-[80%] mx-auto py-8 md:py-10">
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
-
-          {/* Left: Brand Identity */}
           <div className="flex flex-col items-center lg:items-start gap-4">
-            <Link href="/" className="group flex items-center gap-3 transition-transform hover:scale-[1.02] active:scale-95 outline-none">
+            <Link href="/" className="group flex items-center gap-3 transition-transform hover:scale-[1.02] active:scale-95 outline-none" aria-label="Go to the FlagForge homepage">
               <div className="relative">
                 <div className="absolute inset-0 bg-red-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                 <Image
                   src={logo}
-                  alt="FlagForge Logo"
+                  alt="FlagForge logo"
                   height={40}
                   width={40}
                   className="relative h-8 w-8 md:h-10 md:w-10 object-contain transition-all duration-500 group-hover:rotate-6"
@@ -60,12 +57,11 @@ export default function Footer() {
                 FlagForge
               </span>
             </Link>
-            <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 text-center lg:text-left leading-relaxed max-w-[280px]">
-              Forging excellence in cybersecurity, one flag at a time.
+            <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 text-center lg:text-left leading-relaxed max-w-[320px]">
+              Capture the flag training, cybersecurity resources, and hands-on challenge practice for curious learners.
             </p>
           </div>
 
-          {/* Center: Connect Section */}
           <div className="flex flex-col items-center gap-4">
             <span className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 dark:text-gray-600">
               CONNECT
@@ -86,14 +82,14 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Right: Navigation */}
           <div className="flex flex-col items-center lg:items-end gap-6">
-            <nav>
+            <nav aria-label="Footer navigation">
               <ul className="flex flex-wrap justify-center lg:justify-end gap-x-6 gap-y-3">
                 {footerLinks.map((link) => (
                   <li key={link.name}>
                     <Link
                       href={link.href}
+                      aria-label={link.label}
                       className="text-[13px] font-bold text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500 transition-colors uppercase tracking-tight relative group/link"
                     >
                       {link.name}
@@ -104,14 +100,12 @@ export default function Footer() {
               </ul>
             </nav>
           </div>
-
         </div>
 
-        {/* Global Footer Bottom */}
         <div className="mt-12 pt-8 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2.5 text-[10px] md:text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest whitespace-nowrap">
             <span className="w-1.5 h-1.5 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.5)]" />
-            © {new Date().getFullYear()} FLAGFORGE. ALL RIGHTS RESERVED.
+            <span>&copy; {new Date().getFullYear()} FLAGFORGE. ALL RIGHTS RESERVED.</span>
           </div>
 
           <div className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest whitespace-nowrap">
@@ -126,7 +120,6 @@ export default function Footer() {
             </Link>
           </div>
         </div>
-
       </div>
     </footer>
   );

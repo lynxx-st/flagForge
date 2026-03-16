@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     title: "FlagForge Cookie Policy",
     description:
       "Understand how FlagForge uses cookies to improve your experience and protect your privacy.",
-    url: "https://flagforge.xyz/cookie-consent",
+    url: "https://flagforgectf.com/cookie-consent",
     type: "website",
     siteName: "FlagForge",
     locale: "en_US",

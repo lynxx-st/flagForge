@@ -1,8 +1,27 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["writeup.flagforge.xyz", "flagforge.xyz", "github.com", "www.instagram.com"],
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "writeup.flagforge.xyz",
+      },
+      {
+        protocol: "https",
+        hostname: "flagforgectf.com",
+      },
+      {
+        protocol: "https",
+        hostname: "blogs.flagforgectf.com",
+      },
+      {
+        protocol: "https",
+        hostname: "github.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.instagram.com",
+      },
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
@@ -13,11 +32,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "*.cdninstagram.com",
+        hostname: "**.cdninstagram.com",
       },
       {
         protocol: "https",
-        hostname: "*.fbcdn.net",
+        hostname: "**.fbcdn.net",
       },
     ],
     formats: ["image/avif", "image/webp"],
@@ -48,11 +67,20 @@ const nextConfig = {
         ],
       },
       {
+        source: "/robots.txt",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, must-revalidate",
+          },
+        ],
+      },
+      {
         source: "/(.*)",
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "https://flagforge.xyz",
+            value: "https://flagforgectf.com",
           },
           {
             key: "X-Frame-Options",

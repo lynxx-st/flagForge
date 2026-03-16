@@ -65,6 +65,7 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: "Segoe UI", "Aptos", "Helvetica Neue", Arial, sans-serif;
   }
 
   /* Custom dark mode styles */

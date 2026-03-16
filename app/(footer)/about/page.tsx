@@ -13,8 +13,6 @@ import {
   Zap,
   Scale,
   CheckCircle2,
-  BookOpen,
-  Cpu,
   Network,
   Binary,
   Search,
@@ -22,35 +20,42 @@ import {
   TrendingUp,
   Heart
 } from "lucide-react";
+import { siteConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "About FlagForge | CTF Platform for Cybersecurity Learning",
-  description: "FlagForge is a dynamic CTF platform promoting cybersecurity awareness and hands-on coding challenges. Join our global community of learners.",
+  description:
+    "Learn what FlagForge is, how the platform teaches capture the flag skills, and why the community focuses on practical cybersecurity learning.",
   keywords: [
-    "CTF",
-    "cybersecurity",
-    "capture the flag",
-    "coding challenges",
-    "hacking",
-    "security learning",
-    "FlagForge",
+    "About FlagForge",
+    "FlagForge CTF platform",
+    "cybersecurity learning",
+    "capture the flag training",
     "Nepal cybersecurity community",
   ],
   authors: [{ name: "FlagForge Team" }],
+  alternates: {
+    canonical: "/about",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
-    title: "About FlagForge | CTF Platform",
-    description: "Where curiosity meets cybersecurity. Learn, compete, and grow with our global community.",
+    title: "About FlagForge | CTF Platform for Cybersecurity Learning",
+    description:
+      "See how FlagForge helps learners practice cybersecurity skills through hands-on capture the flag challenges.",
     type: "website",
-    siteName: "FlagForge",
-    url: "https://flagforge.xyz/about",
+    siteName: siteConfig.name,
+    url: `${siteConfig.url}/about`,
+    images: [{ url: siteConfig.ogImage, alt: "About FlagForge" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "About FlagForge | CTF Platform",
-    description: "Where curiosity meets cybersecurity. Learn, compete, and grow with our global community.",
-  },
-  alternates: {
-    canonical: "/about",
+    title: "About FlagForge | CTF Platform for Cybersecurity Learning",
+    description:
+      "See how FlagForge helps learners practice cybersecurity skills through hands-on capture the flag challenges.",
+    images: [siteConfig.ogImage],
   },
 };
 
@@ -58,27 +63,26 @@ export default function About() {
   const breadcrumbData = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
+    itemListElement: [
       {
         "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://flagforge.xyz/"
+        position: 1,
+        name: "Home",
+        item: `${siteConfig.url}/`,
       },
       {
         "@type": "ListItem",
-        "position": 2,
-        "name": "About",
-        "item": "https://flagforge.xyz/about"
-      }
-    ]
+        position: 2,
+        name: "About",
+        item: `${siteConfig.url}/about`,
+      },
+    ],
   };
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-950 dark:text-white pb-20 relative overflow-hidden transition-colors duration-500">
       <JsonLd data={breadcrumbData} />
 
-      {/* Background Effects */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[120px] animate-pulse" />
         <div className="absolute bottom-[-5%] right-[-2%] w-[30%] h-[30%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[100px]" />
@@ -86,8 +90,6 @@ export default function About() {
       </div>
 
       <div className="relative z-10 w-[92%] lg:w-[75%] max-w-5xl mx-auto pt-28 lg:pt-36">
-
-        {/* Header Section */}
         <div className="flex flex-col items-center gap-6 mb-16 lg:mb-24">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 text-red-600 dark:text-red-400 text-xs font-black uppercase tracking-[0.2em]">
             <Info className="w-3.5 h-3.5" />
@@ -98,22 +100,17 @@ export default function About() {
               About <span className="text-red-400 dark:text-red-500">FlagForge</span>
             </h1>
             <h2 className="text-md text-gray-500 dark:text-gray-400 italic font-medium tracking-wide uppercase">
-              "Where curiosity meets cybersecurity."
+              Capture the flag training built for real cybersecurity growth.
             </h2>
             <p className="text-lg lg:text-xl font-medium text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
               FlagForge is a dynamic and engaging CTF platform dedicated to promoting{" "}
-              <span className="text-red-500 dark:text-red-500 font-black">
-                Cybersecurity
-              </span>{" "}
-              awareness and fostering a passion for coding among participants.
+              <span className="text-red-500 dark:text-red-500 font-black">Cybersecurity</span>{" "}
+              awareness and helping learners build practical security skills through hands-on challenge solving.
             </p>
           </div>
         </div>
 
-        {/* Main Content Dashboard */}
         <div className="space-y-10 lg:space-y-16">
-
-          {/* Platform & Features Card */}
           <div className="relative group">
             <div className="absolute -inset-4 bg-gradient-to-br from-red-600/5 to-orange-500/5 blur-3xl opacity-50 pointer-events-none" />
             <div className="relative bg-white/60 dark:bg-white/[0.02] backdrop-blur-3xl border border-white dark:border-white/10 rounded-[2.5rem] lg:rounded-[3.5rem] p-8 lg:p-14 shadow-2xl">
@@ -125,12 +122,10 @@ export default function About() {
                       <h2 className="text-2xl font-black tracking-tighter uppercase dark:text-white">Our Platform</h2>
                     </div>
                     <p className="text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-                      Our platform features a clean, responsive interface and an easy-to-use
-                      experience. Flags are securely submitted and efficiently validated for
-                      fair play. Participants can track scores on a real-time leaderboard.
-                      With Google Authentication, users can sign in instantly and start
-                      solving. Challenges can be filtered by category and difficulty,
-                      helping participants find content that fits their skills and interests.
+                      FlagForge combines guided learning resources, practical CTF challenges, and a community-focused
+                      interface so learners can study cybersecurity by doing. Participants can sign in quickly, filter
+                      challenges by category, track progress, and move from beginner-friendly puzzles into deeper
+                      problem-solving across web, crypto, forensics, and binary analysis.
                     </p>
                   </div>
 
@@ -141,9 +136,8 @@ export default function About() {
                         <h4 className="text-lg font-black tracking-tighter uppercase dark:text-white text-sm">Our Mission</h4>
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
-                        To make cybersecurity learning accessible and engaging through practical
-                        challenges, collaboration, and gamified experiences that empower learners
-                        worldwide.
+                        To make cybersecurity learning accessible and engaging through practical challenges,
+                        collaboration, and gamified experiences that empower learners worldwide.
                       </p>
                     </div>
                     <div className="space-y-4">
@@ -152,8 +146,8 @@ export default function About() {
                         <h4 className="text-lg font-black tracking-tighter uppercase dark:text-white text-sm">Our Vision</h4>
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
-                        To build a global community where future cybersecurity experts and developers
-                        learn, compete, and grow together.
+                        To build a trusted capture the flag community where future security engineers learn, compete,
+                        and grow together.
                       </p>
                     </div>
                   </div>
@@ -161,10 +155,10 @@ export default function About() {
 
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { icon: Lock, title: "Secure", desc: "End-to-end encrypted communication" },
-                    { icon: Users, title: "Collaborative", desc: "Direct participant-organizer communication" },
-                    { icon: Globe, title: "Global", desc: "Worldwide network of participants" },
-                    { icon: ShieldAlert, title: "Private", desc: "Responsible disclosure practices" },
+                    { icon: Lock, title: "Secure", desc: "Practice in a controlled learning environment" },
+                    { icon: Users, title: "Collaborative", desc: "Built for students, teams, and communities" },
+                    { icon: Globe, title: "Open", desc: "Rooted in Nepal and accessible to global learners" },
+                    { icon: ShieldAlert, title: "Responsible", desc: "Focused on ethical hacking and safe skill-building" },
                   ].map((feature, i) => (
                     <div
                       key={i}
@@ -185,7 +179,6 @@ export default function About() {
             </div>
           </div>
 
-          {/* Ethical Hacking Disclosure Card */}
           <div className="relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-600 rounded-[2rem] blur opacity-25" />
             <div className="relative bg-amber-50/80 dark:bg-amber-950/20 backdrop-blur-3xl border border-amber-200/50 dark:border-amber-900/40 rounded-[2rem] p-8 lg:p-12 overflow-hidden">
@@ -196,7 +189,7 @@ export default function About() {
                 </div>
                 <div className="space-y-6">
                   <h3 className="text-2xl font-black tracking-tighter uppercase text-amber-900 dark:text-amber-400">
-                    Educational Purpose & Ethical Hacking
+                    Educational Purpose and Ethical Hacking
                   </h3>
                   <div className="space-y-4 text-gray-700 dark:text-gray-300 font-medium leading-relaxed">
                     <p>
@@ -205,9 +198,7 @@ export default function About() {
                     <p>
                       All challenges and activities on FlagForge are intended to teach responsible security practices. We strictly prohibit the use of knowledge gained on our platform for any illegal activities, unauthorized access to systems, or malicious purposes.
                     </p>
-                    <p>
-                      By participating in FlagForge challenges, users agree to:
-                    </p>
+                    <p>By participating in FlagForge challenges, users agree to:</p>
                     <ul className="grid sm:grid-cols-2 gap-4 pt-2">
                       {[
                         "Use their skills only for legal and ethical purposes",
@@ -231,45 +222,44 @@ export default function About() {
             </div>
           </div>
 
-          {/* Learning Categories Grid */}
           <div className="space-y-10">
             <div className="text-center space-y-4">
               <h3 className="text-3xl font-black tracking-tighter uppercase dark:text-white">
-                What You'll <span className="text-red-500">Learn</span>
+                What You&apos;ll <span className="text-red-500">Learn</span>
               </h3>
-              <p className="text-gray-500 dark:text-gray-400 font-medium">Comprehensive cybersecurity skills development</p>
+              <p className="text-gray-500 dark:text-gray-400 font-medium">Core challenge areas available across the FlagForge learning experience</p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
                 {
                   title: "Web Security",
                   icon: Globe,
-                  skills: ["XSS Prevention", "SQL Injection Defense", "CSRF Protection", "Secure Authentication"]
+                  skills: ["XSS prevention", "SQL injection defense", "CSRF protection", "Secure authentication"]
                 },
                 {
                   title: "Cryptography",
                   icon: Lock,
-                  skills: ["Encryption Basics", "Hash Functions", "Digital Signatures", "Secure Communication"]
+                  skills: ["Encryption basics", "Hash functions", "Digital signatures", "Secure communication"]
                 },
                 {
                   title: "Network Security",
                   icon: Network,
-                  skills: ["Protocol Analysis", "Packet Inspection", "Firewall Configuration", "Intrusion Detection"]
+                  skills: ["Protocol analysis", "Packet inspection", "Firewall concepts", "Intrusion detection"]
                 },
                 {
                   title: "Reverse Engineering",
                   icon: Binary,
-                  skills: ["Binary Analysis", "Debugging Techniques", "Code Decompilation", "Malware Analysis"]
+                  skills: ["Binary analysis", "Debugging techniques", "Code decompilation", "Malware analysis"]
                 },
                 {
                   title: "Forensics",
                   icon: Search,
-                  skills: ["Data Recovery", "Log Analysis", "Memory Forensics", "Evidence Collection"]
+                  skills: ["Data recovery", "Log analysis", "Memory forensics", "Evidence collection"]
                 },
                 {
                   title: "Problem Solving",
                   icon: Puzzle,
-                  skills: ["Critical Thinking", "Pattern Recognition", "Logical Reasoning", "Creative Solutions"]
+                  skills: ["Critical thinking", "Pattern recognition", "Logical reasoning", "Creative solutions"]
                 }
               ].map((category, i) => (
                 <div
@@ -294,7 +284,6 @@ export default function About() {
             </div>
           </div>
 
-          {/* Stats & Community Card */}
           <div className="relative group overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-rose-700 opacity-90 transition-opacity" />
             <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.1]" />
@@ -302,15 +291,15 @@ export default function About() {
               <div className="space-y-4">
                 <h3 className="text-4xl lg:text-5xl font-black tracking-tighter uppercase leading-[0.9]">Join Our Growing Community</h3>
                 <p className="text-lg lg:text-xl font-medium opacity-90 max-w-3xl leading-relaxed">
-                  Built by passionate developers and cybersecurity enthusiasts, FlagForge is more than just a platform—it's a community dedicated to helping others learn, grow, and forge their own path in technology and cybersecurity.
+                  Built by passionate developers and cybersecurity enthusiasts, FlagForge is more than just a platform. It is a community dedicated to helping others learn, grow, and build practical security confidence.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 w-full pt-4">
                 {[
-                  { label: "Active Users", value: "1000+", icon: Users },
-                  { label: "Challenges Solved", value: "500+", icon: TrendingUp },
-                  { label: "Learning Support", value: "24/7", icon: Heart }
+                  { label: "Active users", value: "1000+", icon: Users },
+                  { label: "Challenges solved", value: "500+", icon: TrendingUp },
+                  { label: "Learning support", value: "24/7", icon: Heart }
                 ].map((stat, i) => (
                   <div key={i} className="space-y-4 group/stat">
                     <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center mx-auto border border-white/20 group-hover/stat:rotate-[12deg] transition-transform">
@@ -326,7 +315,6 @@ export default function About() {
             </div>
           </div>
 
-          {/* Call to Action */}
           <div className="flex flex-col items-center gap-6 py-10 lg:py-14 animate-in fade-in slide-in-from-bottom-5 duration-1000">
             <Link
               href="/problems"
@@ -348,7 +336,6 @@ export default function About() {
               </p>
             </div>
           </div>
-
         </div>
       </div>
     </div>
