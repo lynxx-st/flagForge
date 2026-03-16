@@ -173,16 +173,14 @@ const Navbar: React.FC = () => {
 
         <div className="hidden md:flex items-center gap-8 lg:gap-12">
           <ul className="flex items-center gap-1 lg:gap-2">
-            {NavbarData
-              .filter((item) => session.status === "authenticated" || item.tags !== "Home")
-              .map(({ href, tags }: NavbarItems) => (
-                <NavItem
-                  key={href}
-                  href={href}
-                  tags={tags}
-                  style="px-4 py-2 text-xs md:text-sm font-bold uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-all"
-                />
-              ))}
+            {visibleNavItems.map(({ href, tags }: NavbarItems) => (
+              <NavItem
+                key={href}
+                href={href}
+                tags={tags}
+                style="px-4 py-2 text-xs md:text-sm font-bold uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-all"
+              />
+            ))}
           </ul>
 
           <div className="flex items-center gap-4 lg:gap-6 ml-4 pl-4 border-l border-gray-100 dark:border-white/10">
@@ -293,31 +291,30 @@ const Navbar: React.FC = () => {
             </div>
           </button>
 
-          <Sheet open={open} onOpenChange={handleSheetOpenChange}>
-            <SheetTrigger asChild>
-              <button
-                aria-label="Open navigation menu"
-                className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 active:scale-90 transition-all"
-              >
-                <CgMenuRightAlt className="text-3xl text-gray-900 dark:text-white" />
-              </button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[85vw] sm:w-[400px] border-none p-0 bg-white dark:bg-gray-950">
-              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-              <SheetDescription className="sr-only">
-                Access site navigation links, user profile, and session controls.
-              </SheetDescription>
-              <div className="flex flex-col h-full">
-                <div className="p-8 border-b border-gray-100 dark:border-white/5 flex items-center gap-3">
-                  <Image src={logo} alt="FlagForge logo" height={40} width={40} />
-                  <span className="text-2xl font-black text-gray-950 dark:text-white tracking-tighter">FlagForge</span>
-                </div>
+          {mounted ? (
+            <Sheet open={open} onOpenChange={handleSheetOpenChange}>
+              <SheetTrigger asChild>
+                <button
+                  aria-label="Open navigation menu"
+                  className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 active:scale-90 transition-all"
+                >
+                  <CgMenuRightAlt className="text-3xl text-gray-900 dark:text-white" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[85vw] sm:w-[400px] border-none p-0 bg-white dark:bg-gray-950">
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                <SheetDescription className="sr-only">
+                  Access site navigation links, user profile, and session controls.
+                </SheetDescription>
+                <div className="flex flex-col h-full">
+                  <div className="p-8 border-b border-gray-100 dark:border-white/5 flex items-center gap-3">
+                    <Image src={logo} alt="FlagForge logo" height={40} width={40} />
+                    <span className="text-2xl font-black text-gray-950 dark:text-white tracking-tighter">FlagForge</span>
+                  </div>
 
-                <nav className="flex-1 p-6">
-                  <ul className="space-y-4">
-                    {NavbarData
-                      .filter((item) => session.status === "authenticated" || item.tags !== "Home")
-                      .map(({ href, tags }: NavbarItems) => {
+                  <nav className="flex-1 p-6">
+                    <ul className="space-y-4">
+                      {visibleNavItems.map(({ href, tags }: NavbarItems) => {
                         const getIcon = (tag: string) => {
                           switch (tag.toLowerCase()) {
                             case "home":
@@ -354,44 +351,23 @@ const Navbar: React.FC = () => {
                         );
                       })}
 
-                    {session.status === "unauthenticated" && (
-                      <li className="pt-6">
-                        <Link
-                          href="/authentication"
-                          onClick={handleMobileItemClick}
-                          className="group relative flex items-center justify-center w-full py-5 overflow-hidden rounded-2xl transition-all active:scale-[0.98]"
-                        >
-                          <div className="absolute inset-0 bg-red-600 transition-transform group-hover:scale-105" />
-                          <div className="relative flex items-center gap-3 font-black text-lg text-white">
-                            <LogIn className="w-6 h-6" />
-                            <span>Sign in / Sign up</span>
-                          </div>
-                        </Link>
-                      </li>
-                    )}
-                  </ul>
-                </nav>
-
-                {session.status === "authenticated" && (
-                  <div className="p-8 bg-gray-50/50 dark:bg-white/[0.02] border-t border-gray-100 dark:border-white/5">
-                    <div className="flex items-center gap-4 mb-8">
-                      <div className="relative">
-                        <div className="absolute -inset-1 bg-red-500/20 blur-md rounded-2xl" />
-                        <Image src={session.data?.user?.image ?? logo} alt="P" height={56} width={56} className="relative rounded-2xl border-2 border-white dark:border-gray-800 object-cover" />
-                        <div className="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white dark:border-gray-950" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-gray-950 dark:text-white truncate">
-                          {session.data?.user?.name}
-                        </h4>
-                        <p className="text-xs text-gray-500 truncate">
-                          {session.data?.user?.email}
-                        </p>
-                        <p className="text-[10px] font-bold uppercase tracking-tight text-gray-400 dark:text-gray-500">
-                          {standing}
-                        </p>
-                      </div>
-                    </div>
+                      {isUnauthenticated && (
+                        <li className="pt-6">
+                          <Link
+                            href="/authentication"
+                            onClick={handleMobileItemClick}
+                            className="group relative flex items-center justify-center w-full py-5 overflow-hidden rounded-2xl transition-all active:scale-[0.98]"
+                          >
+                            <div className="absolute inset-0 bg-red-600 transition-transform group-hover:scale-105" />
+                            <div className="relative flex items-center gap-3 font-black text-lg text-white">
+                              <LogIn className="w-6 h-6" />
+                              <span>Sign in / Sign up</span>
+                            </div>
+                          </Link>
+                        </li>
+                      )}
+                    </ul>
+                  </nav>
 
                   {isAuthenticated && (
                     <div className="p-8 bg-gray-50/50 dark:bg-white/[0.02] border-t border-gray-100 dark:border-white/5">
