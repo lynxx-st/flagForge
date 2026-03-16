@@ -246,10 +246,10 @@ export default function TermsOfService() {
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
                 For questions about these Terms of Service, please contact us at{" "}
                 <a
-                  href="mailto:info@flagforge.xyz"
+                  href="mailto:info@flagforgectf.com"
                   className="text-red-500 hover:text-red-600 transition-colors underline underline-offset-4"
                 >
-                  info@flagforge.xyz
+                  info@flagforgectf.com
                 </a>
               </p>
             </section>

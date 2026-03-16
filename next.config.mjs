@@ -8,6 +8,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "writeup.flagforgectf.com",
+      },
+      {
+        protocol: "https",
         hostname: "flagforgectf.com",
       },
       {
@@ -20,10 +24,6 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "www.instagram.com",
-      },
-      {
-        protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
       {
@@ -32,11 +32,19 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "**.cdninstagram.com",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.cdninstagram.com",
       },
       {
         protocol: "https",
         hostname: "**.fbcdn.net",
+      },
+      {
+        protocol: "https",
+        hostname: "www.instagram.com",
       },
     ],
     formats: ["image/avif", "image/webp"],
