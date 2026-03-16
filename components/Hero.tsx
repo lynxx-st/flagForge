@@ -12,7 +12,11 @@ import bibekImage from "@/public/bibekghimire.jpeg";
 
 import { Activity, Rocket, Target, Users, Layers, Clock } from "lucide-react";
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  afterFaqSection?: React.ReactNode;
+}
+
+const Hero: React.FC<HeroProps> = ({ afterFaqSection }) => {
   const { status } = useSession();
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -511,8 +515,10 @@ const Hero: React.FC = () => {
                 </div>
               </div>
             ))}
-          </div>
+          </div>
         </section>
+
+        {afterFaqSection}
 
       </div>
     </div>
@@ -520,3 +526,4 @@ const Hero: React.FC = () => {
 };
 
 export default Hero;
+

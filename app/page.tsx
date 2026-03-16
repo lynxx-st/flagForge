@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Hero from "@/components/Hero";
+import HomeIntroSection from "@/components/HomeIntroSection";
 import JsonLd from "@/components/JsonLd";
 import HomepageRedirect from "@/components/HomepageRedirect";
 import { landingFaqItems } from "@/lib/faq";
