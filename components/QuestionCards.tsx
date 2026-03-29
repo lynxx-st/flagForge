@@ -3,14 +3,16 @@ import { Questions } from "@/interfaces";
 import Link from "next/link";
 import { Check } from "lucide-react";
 
-const QuestionCards = ({
+// Using React.memo to prevent unnecessary re-renders of the card when parent state changes.
+// This is a performance optimization for list items, especially when the list is long.
+const QuestionCards = React.memo(function QuestionCards({
   title,
   description,
   category,
   points,
   done,
   _id,
-}: Questions) => {
+}: Questions) {
   const isDone = done.some(
     (item: { questionId: string | undefined }) => item.questionId === _id
   );
@@ -49,6 +51,6 @@ const QuestionCards = ({
       </h3>
     </Link>
   );
-};
+});
 
 export default QuestionCards;
