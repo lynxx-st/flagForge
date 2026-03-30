@@ -115,6 +115,7 @@ const useCategories = () => {
 const useProblems = (
   currentPage: number,
   selectedCategory: string,
+  searchQuery: string,
   categoriesLoading: boolean
 ) => {
   const [problems, setProblems] = useState<QuestionWithExpiry[]>([]);
@@ -133,6 +134,10 @@ const useProblems = (
       let apiUrl = `/api/problems?page=${currentPage}`;
       if (selectedCategory && selectedCategory !== "All") {
         apiUrl += `&category=${encodeURIComponent(selectedCategory)}`;
+      }
+
+      if (searchQuery.trim()) {
+        apiUrl += `&search=${encodeURIComponent(searchQuery.trim())}`;
       }
 
       const response = await fetch(apiUrl);
@@ -159,8 +164,8 @@ const useProblems = (
       setScore(totalScore);
       setProblems(sanitizedData);
       setQuestionDone(questionDone);
-      setHasNextPage(pagination.hasNext);
-      setTotalPages(pagination.totalPages);
+      setHasNextPage(pagination?.hasNext ?? false);
+      setTotalPages(pagination?.totalPages ?? 1);
     } catch (error: unknown) {
       if (error instanceof Error) {
         const message = error.message || "Unable to fetch problems.";
@@ -177,7 +182,7 @@ const useProblems = (
     } finally {
       setLoading(false);
     }
-  }, [currentPage, selectedCategory]);
+  }, [currentPage, selectedCategory, searchQuery]);
 
   useEffect(() => {
     if (!categoriesLoading) {
@@ -491,10 +496,23 @@ const Page: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<QuestionWithExpiry[]>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
   const { categories, loading: categoriesLoading } = useCategories();
+
+  // Debounce search query to avoid frequent API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset to first page when search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchQuery]);
+
   const {
     problems,
     setProblems,
@@ -504,90 +522,11 @@ const Page: React.FC = () => {
     hasNextPage,
     totalPages,
     errorMessage,
-  } = useProblems(currentPage, selectedCategory, categoriesLoading);
+  } = useProblems(currentPage, selectedCategory, debouncedSearchQuery, categoriesLoading);
 
-  const fetchAllProblems = useCallback(
-    async (category: string) => {
-      let page = 1;
-      let hasNext = true;
-      const allProblems: QuestionWithExpiry[] = [];
-
-      while (hasNext) {
-        let apiUrl = `/api/problems?page=${page}&limit=1000`;
-        if (category && category !== "All") {
-          apiUrl += `&category=${encodeURIComponent(category)}`;
-        }
-
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-          throw new Error("Failed to fetch problems");
-        }
-
-        const { data, pagination }: ApiResponse = await response.json();
-        const sanitizedData = sanitizeProblems(data);
-        allProblems.push(...sanitizedData);
-
-        hasNext = Boolean(pagination?.hasNext);
-        page += 1;
-
-        if (!pagination || data.length === 0) {
-          hasNext = false;
-        }
-      }
-
-      return allProblems;
-    },
-    []
-  );
-
-  useEffect(() => {
-    const query = searchQuery.trim();
-    if (!query) {
-      setSearchResults([]);
-      setSearchLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    const timer = setTimeout(async () => {
-      setSearchLoading(true);
-      try {
-        const allProblems = await fetchAllProblems(selectedCategory);
-        if (cancelled) return;
-        const normalizedQuery = query.toLowerCase();
-        const filtered = allProblems.filter((problem) => {
-          const title = problem.title?.toLowerCase() || "";
-          const description = problem.description?.toLowerCase() || "";
-          const category = problem.category?.toLowerCase() || "";
-          return (
-            title.includes(normalizedQuery) ||
-            description.includes(normalizedQuery) ||
-            category.includes(normalizedQuery)
-          );
-        });
-        setSearchResults(filtered);
-      } catch (error) {
-        if (!cancelled) {
-          console.error("Failed to search problems:", error);
-          setSearchResults([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setSearchLoading(false);
-        }
-      }
-    }, 300);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [fetchAllProblems, searchQuery, selectedCategory]);
-
-  const isSearchActive = searchQuery.trim().length > 0;
-  const visibleProblems = isSearchActive ? searchResults : problems;
+  const visibleProblems = problems;
   const shouldShowNoProblems =
-    visibleProblems.length === 0 && !searchLoading;
+    visibleProblems.length === 0 && !problemsLoading;
 
   // Handle category filter change
   const handleCategoryChange = useCallback((category: string) => {
@@ -649,7 +588,7 @@ const Page: React.FC = () => {
   // Authentication will be required only when solving challenges
 
   const shouldShowPagination =
-    !isSearchActive && (problems.length > 0 || currentPage > 1);
+    problems.length > 0 || currentPage > 1;
 
   return (
     <div className="relative flex flex-col justify-center items-center gap-8 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 min-h-screen bg-gradient-to-b from-white via-red-50/40 to-white dark:from-gray-950 dark:via-gray-900/40 dark:to-gray-950 animate-in fade-in duration-500">
@@ -690,7 +629,7 @@ const Page: React.FC = () => {
         <SearchBar
           value={searchQuery}
           onChange={setSearchQuery}
-          loading={searchLoading}
+          loading={problemsLoading}
         />
 
         <DesktopFilter
@@ -714,7 +653,7 @@ const Page: React.FC = () => {
           currentPage={currentPage}
           totalPages={totalPages}
           searchQuery={searchQuery}
-          isSearching={searchLoading}
+          isSearching={problemsLoading}
         />
       </div>
 
