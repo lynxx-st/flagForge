@@ -3,14 +3,14 @@ import { Questions } from "@/interfaces";
 import Link from "next/link";
 import { Check } from "lucide-react";
 
-const QuestionCards = ({
+const QuestionCards = React.memo(function QuestionCards({
   title,
   description,
   category,
   points,
   done,
   _id,
-}: Questions) => {
+}: Questions) {
   const isDone = done.some(
     (item: { questionId: string | undefined }) => item.questionId === _id
   );
@@ -49,6 +49,6 @@ const QuestionCards = ({
       </h3>
     </Link>
   );
-};
+});
 
 export default QuestionCards;
