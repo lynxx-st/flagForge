@@ -15,7 +15,6 @@ const badgeImageSchema = new mongoose.Schema<BadgeImageDocument>({
   filename: {
     type: String,
     required: true,
-    unique: true
   },
   path: {
     type: String,

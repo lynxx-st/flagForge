@@ -84,6 +84,9 @@ questionSchema.index({ expiryDate: 1 });
 
 questionSchema.index({ category: 1, points: 1 });
 
+// Index for sorting challenges by creation date (newest first)
+questionSchema.index({ createdAt: -1 });
+
 const QuestionModel =
   mongoose.models.Question || model("Question", questionSchema);
 
