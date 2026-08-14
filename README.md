@@ -57,11 +57,14 @@ npm install
 
 <p>4. Configure .env</p>
 
+> [!CAUTION]
+> **Security Warning**: Do not prefix server-side environment variables (e.g., `MONGO_URL`, `ADMIN_EMAIL`, `GOOGLE_CLIENT_SECRET`) with `NEXT_PUBLIC_`. This will expose them to the browser, creating a critical security vulnerability. Only variables intended to be public on the client-side should have this prefix.
+
 ```
 NEXT_PUBLIC_STATSIG_CLIENT_KEY=
 NEXT_PUBLIC_STATSIG_CLIENT_KEY=
-NEXT_PUBLIC_ADMIN_EMAIL=
-NEXT_PUBLIC_ADMIN_PASSWORD=
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
 NOTION_API_KEY=
 NOTION_DATABASE_ID=
 GOOGLE_CLIENT_SECRET=
