@@ -215,7 +215,7 @@ const Navbar: React.FC = () => {
                     <div className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-white dark:border-gray-800 shadow-sm ring-1 ring-red-500/10 group-hover:ring-red-500/30 transition-all">
                       <Image
                         src={session.data?.user?.image ?? logo}
-                        alt="Profile"
+                        alt="User profile picture"
                         fill
                         className="object-cover"
                       />
@@ -375,7 +375,7 @@ const Navbar: React.FC = () => {
                     <div className="flex items-center gap-4 mb-8">
                       <div className="relative">
                         <div className="absolute -inset-1 bg-red-500/20 blur-md rounded-2xl" />
-                        <Image src={session.data?.user?.image ?? logo} alt="P" height={56} width={56} className="relative rounded-2xl border-2 border-white dark:border-gray-800 object-cover" />
+                        <Image src={session.data?.user?.image ?? logo} alt="User profile picture" height={56} width={56} className="relative rounded-2xl border-2 border-white dark:border-gray-800 object-cover" />
                         <div className="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white dark:border-gray-950" />
                       </div>
                       <div className="flex-1 min-w-0">

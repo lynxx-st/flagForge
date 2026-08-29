@@ -30,6 +30,7 @@ export default function AdHintModal({
                         </h2>
                         <button
                             onClick={onClose}
+                            aria-label="Close modal"
                             className="text-white hover:bg-white hover:bg-opacity-20 rounded-full w-8 h-8 flex items-center justify-center transition-all"
                         >
                             <svg
