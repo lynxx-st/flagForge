@@ -57,8 +57,6 @@ const SITEMAP_EXCLUDE = [
   '/roles/developers/*',
   '/roles/developers',
   '/profile',
-  '/problems',
-  '/leaderboard',
   '/home',
   'resources/uploads',
   '/unauthorized',
