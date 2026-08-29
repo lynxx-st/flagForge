@@ -723,9 +723,20 @@ const Page: React.FC = () => {
       {/* Problems Grid */}
       <div className="w-full flex justify-center">
         <div
-          className="w-full grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 items-stretch gap-5 sm:gap-6"
-          aria-busy={problemsLoading}
+          className={`relative w-full grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 items-stretch gap-5 sm:gap-6 transition-opacity duration-300 ${
+            problemsLoading || searchLoading
+              ? "opacity-50 pointer-events-none"
+              : "opacity-100"
+          }`}
+          aria-busy={problemsLoading || searchLoading}
         >
+          {(problemsLoading || searchLoading) && (
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <div className="p-4 bg-white/50 dark:bg-gray-900/50 rounded-full backdrop-blur-sm">
+                <Loading />
+              </div>
+            </div>
+          )}
           {visibleProblems.length > 0 ? (
             visibleProblems.map(
               ({
