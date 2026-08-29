@@ -53,8 +53,7 @@ const QuestionCards = ({
         </div>
       </div>
       <h3 className="font-base font-[0.5rem] text-black dark:text-gray-200 line-clamp-2 transition-colors duration-300">
-        {description}...{" "}
-        <span className="text-red-500 dark:text-red-400 font-bold">more</span>
+        {description}
       </h3>
     </Link>
   );
