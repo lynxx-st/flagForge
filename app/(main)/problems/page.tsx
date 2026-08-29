@@ -466,7 +466,7 @@ const PaginationControls: React.FC<{
         aria-disabled={isFirstPage}
         title={isFirstPage ? "You are on the first page" : "Go to previous page"}
         className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${isFirstPage
-            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-50"
             : "bg-red-500/90 hover:bg-red-600"
           }`}
       >
@@ -477,7 +477,7 @@ const PaginationControls: React.FC<{
         aria-disabled={isLastPage}
         title={isLastPage ? "You are on the last page" : "Go to next page"}
         className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${isLastPage
-            ? "bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed"
+            ? "bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed opacity-50"
             : "bg-red-500/90 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600"
           }`}
       >
