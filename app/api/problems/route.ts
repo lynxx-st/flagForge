@@ -199,6 +199,16 @@ export async function GET(request: NextRequest) {
   // Get category filter from query params
   const category = searchParams.get("category");
 
+  if (category) {
+    const validCategories = await QuestionModel.distinct("category");
+    if (category !== "All" && !validCategories.includes(category)) {
+      return NextResponse.json(
+        { message: "Invalid category" },
+        { status: HttpStatusCode.BadRequest }
+      );
+    }
+  }
+
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
 
