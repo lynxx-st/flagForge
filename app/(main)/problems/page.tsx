@@ -462,8 +462,8 @@ const PaginationControls: React.FC<{
   return (
     <div className="flex justify-center sm:justify-end gap-3 w-full">
       <button
-        onClick={isFirstPage ? (e) => e.preventDefault() : onPrevious}
-        aria-disabled={isFirstPage}
+        onClick={onPrevious}
+        disabled={isFirstPage}
         title={isFirstPage ? "You are on the first page" : "Go to previous page"}
         className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${isFirstPage
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -473,8 +473,8 @@ const PaginationControls: React.FC<{
         Previous
       </button>
       <button
-        onClick={isLastPage ? (e) => e.preventDefault() : onNext}
-        aria-disabled={isLastPage}
+        onClick={onNext}
+        disabled={isLastPage}
         title={isLastPage ? "You are on the last page" : "Go to next page"}
         className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${isLastPage
             ? "bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed"
