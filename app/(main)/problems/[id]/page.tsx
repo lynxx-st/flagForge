@@ -462,6 +462,9 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     if (isIncorrect) {
       setIsIncorrect(false);
     }
+    if (message) {
+      setMessage(null);
+    }
   };
 
   const enterPracticeMode = () => {
@@ -1065,6 +1068,18 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                             ? "Submit (Practice)"
                             : "Submit"}
                 </button>
+                {message && !message.includes("points deducted") && !message.includes("Hint revealed") && (
+                  <p
+                    role="alert"
+                    className={`mt-2 text-sm font-medium ${
+                      isCorrect
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-red-600 dark:text-red-400"
+                    }`}
+                  >
+                    {message}
+                  </p>
+                )}
 
                 {/* Time remaining display */}
                 {timeRemaining && timeRemaining > 0 && !isExpired && (
