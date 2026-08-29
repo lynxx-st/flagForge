@@ -45,16 +45,12 @@ export async function GET(
   try {
     // Await the params since they're now a Promise
     const { id } = await params;
-    if (!process.env.NOTION_API_KEY) {
-      return NextResponse.json(
-        { error: "NOTION_API_KEY is not configured" },
-        { status: 500 }
-      );
-    }
+    const apiKey = process.env.NOTION_API_KEY;
     const databaseId = process.env.NOTION_DATABASE_ID;
-    if (!databaseId) {
+    if (!apiKey || !databaseId) {
+      console.error('Notion API key or database ID is not set');
       return NextResponse.json(
-        { error: "NOTION_DATABASE_ID is not configured" },
+        { error: "Notion integration is not configured" },
         { status: 500 }
       );
     }
