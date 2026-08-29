@@ -196,54 +196,55 @@ export async function GET(request: NextRequest) {
   const requestedLimit = searchParams.get("limit");
   const limit = requestedLimit ? parseInt(requestedLimit, 10) : 8;
 
-  // Get category filter from query params
+  // Get filter parameters
   const category = searchParams.get("category");
+  const search = searchParams.get("search");
 
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
-
-  // Allow public access to browse problems
-  // Authentication will be required only for solving challenges
 
   try {
     await connect();
 
     // Build the base query - exclude flag
-    let baseQuery = {};
+    let baseQuery: any = {};
 
     // Add category filter if provided and not "All"
     if (category && category !== "All") {
-      baseQuery = { category: category };
+      baseQuery.category = category;
     }
 
-    // Build the query with category filter
-    let query = QuestionModel.find(baseQuery).select("-flag");
-
-    // Add sorting - newest first by default
-    query = query.sort({ createdAt: -1 });
-
-    // Apply pagination only if limit is reasonable (not trying to get all)
-    if (limit <= 1000) {
-      query = query.skip(startIndex).limit(limit);
+    // Add server-side search support
+    if (search) {
+      const searchRegex = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+      baseQuery.$or = [
+        { title: searchRegex },
+        { description: searchRegex },
+        { category: searchRegex },
+      ];
     }
 
-    const questions = await query.exec();
+    // Parallelize independent database queries for better performance
+    const [questions, totalQuestions, userData] = await Promise.all([
+      QuestionModel.find(baseQuery)
+        .select("-flag")
+        .sort({ createdAt: -1 })
+        .skip(startIndex)
+        .limit(limit > 1000 ? 1000 : limit)
+        .exec(),
+      QuestionModel.countDocuments(baseQuery),
+      session?.user?.email
+        ? userSchema.findOne({ email: session.user.email }).then(async (user) => {
+            if (!user) return null;
+            const userQuestion = await UserQuestionModel.find({ userId: user.id });
+            return { user, userQuestion };
+          })
+        : Promise.resolve(null),
+    ]);
 
-    let user = null;
-    let userQuestion = [];
-    let totalScore = 0;
-
-    // Only fetch user data if session exists
-    if (session?.user?.email) {
-      user = await userSchema.findOne({ email: session.user.email });
-      if (user) {
-        userQuestion = await UserQuestionModel.find({ userId: user.id });
-        totalScore = user.totalScore || 0;
-      }
-    }
-
-    // Get total count for pagination info (with category filter applied)
-    const totalQuestions = await QuestionModel.countDocuments(baseQuery);
+    const user = userData?.user || null;
+    const userQuestion = userData?.userQuestion || [];
+    const totalScore = user?.totalScore || 0;
 
     // Get solve counts for all these questions
     const questionIds = questions.map((q) => q._id);
