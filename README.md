@@ -52,16 +52,16 @@ cd flagforge
 <p>3. Install required dependencies</p>
 
 ```
-npm install
+pnpm install
 ```
 
 <p>4. Configure .env</p>
 
 ```
-NEXT_PUBLIC_STATSIG_CLIENT_KEY=
-NEXT_PUBLIC_STATSIG_CLIENT_KEY=
-NEXT_PUBLIC_ADMIN_EMAIL=
-NEXT_PUBLIC_ADMIN_PASSWORD=
+# 🚨 SECURITY NOTE: Do not prefix secrets with NEXT_PUBLIC_.
+# Variables starting with NEXT_PUBLIC_ are exposed to the browser.
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
 NOTION_API_KEY=
 NOTION_DATABASE_ID=
 GOOGLE_CLIENT_SECRET=
