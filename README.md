@@ -60,8 +60,11 @@ npm install
 ```
 NEXT_PUBLIC_STATSIG_CLIENT_KEY=
 NEXT_PUBLIC_STATSIG_CLIENT_KEY=
-NEXT_PUBLIC_ADMIN_EMAIL=
-NEXT_PUBLIC_ADMIN_PASSWORD=
+# Note: The ADMIN_EMAIL and ADMIN_PASSWORD variables are placeholders for potential future use
+# or manual admin creation scripts. They are NOT currently used by the application's
+# role-based authentication system, which is managed via NextAuth tokens.
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
 NOTION_API_KEY=
 NOTION_DATABASE_ID=
 GOOGLE_CLIENT_SECRET=
