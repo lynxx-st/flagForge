@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/authOptions";
 import userSchema from "@/models/userSchema";
 import UserQuestionModel from "@/models/userQuestionSchema";
 import mongoose from "mongoose";
+import { createHmac, timingSafeEqual } from "crypto";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -89,6 +90,16 @@ function createErrorResponse(message: string, status: number) {
   return NextResponse.json({ message }, { status });
 }
 
+/**
+ * Constant-time string comparison using HMAC-SHA256
+ */
+function safeCompare(a: string, b: string) {
+  const key = process.env.NEXTAUTH_SECRET || "default-secret-key";
+  const hmacA = createHmac("sha256", key).update(a).digest();
+  const hmacB = createHmac("sha256", key).update(b).digest();
+  return timingSafeEqual(hmacA, hmacB);
+}
+
 export async function GET(
   _: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -121,6 +132,7 @@ export async function GET(
     const questionData = question.toObject();
     delete questionData.flag;
     delete questionData.hints; // Remove hints from main data
+    delete questionData.uploadedBy; // Remove sensitive admin info
 
     // Only fetch user-specific data if session exists
     let isDone = false;
@@ -209,8 +221,9 @@ export async function POST(
 
     // Check if user has already solved this question
     const existingSolution = await checkExistingSolution(user._id, id);
+    const isCorrect = safeCompare(trimmedSubmittedFlag, correctFlag);
+
     if (existingSolution && isPractice) {
-      const isCorrect = trimmedSubmittedFlag === correctFlag;
       return NextResponse.json(
         {
           message: isCorrect
@@ -230,7 +243,7 @@ export async function POST(
     }
 
     // Check if the submitted flag is correct
-    if (trimmedSubmittedFlag === correctFlag) {
+    if (isCorrect) {
       // Flag is correct - save the solution
       try {
         // Calculate final points considering hint penalties
