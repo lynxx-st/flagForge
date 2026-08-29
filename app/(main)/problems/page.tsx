@@ -117,6 +117,7 @@ const useCategories = () => {
 const useProblems = (
   currentPage: number,
   selectedCategory: string,
+  searchQuery: string,
   categoriesLoading: boolean
 ) => {
   const [problems, setProblems] = useState<QuestionWithExpiry[]>([]);
@@ -132,12 +133,22 @@ const useProblems = (
     setErrorMessage(null);
 
     try {
-      let apiUrl = `/api/problems?page=${currentPage}`;
+      // Use URLSearchParams for cleaner query string construction
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+      });
+
       if (selectedCategory && selectedCategory !== "All") {
-        apiUrl += `&category=${encodeURIComponent(selectedCategory)}`;
+        params.append("category", selectedCategory);
       }
 
-      const response = await fetch(apiUrl);
+      // Add search query to the API call
+      const trimmedQuery = searchQuery.trim();
+      if (trimmedQuery) {
+        params.append("search", trimmedQuery);
+      }
+
+      const response = await fetch(`/api/problems?${params.toString()}`);
 
       if (!response.ok) {
         const contentType = response.headers.get("content-type") || "";
@@ -179,13 +190,23 @@ const useProblems = (
     } finally {
       setLoading(false);
     }
-  }, [currentPage, selectedCategory]);
+  }, [currentPage, selectedCategory, searchQuery]);
 
+  // Debounce the fetch call when search query changes
   useEffect(() => {
-    if (!categoriesLoading) {
-      fetchProblems();
+    if (categoriesLoading) return;
+
+    // Don't debounce on initial load or page/category changes, only for search
+    if (searchQuery.trim()) {
+      const timer = setTimeout(() => {
+        fetchProblems();
+      }, 300); // 300ms debounce delay
+
+      return () => clearTimeout(timer);
+    } else {
+      fetchProblems(); // Fetch immediately if not searching
     }
-  }, [fetchProblems, categoriesLoading]);
+  }, [fetchProblems, categoriesLoading, searchQuery]);
 
   return {
     problems,
@@ -493,103 +514,28 @@ const Page: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<QuestionWithExpiry[]>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
+  // No longer need searchResults or searchLoading state, as useProblems handles it.
 
   const { categories, loading: categoriesLoading } = useCategories();
   const {
     problems,
-    setProblems,
+    setProblems, // Keep setProblems for the expiry timer updates
     loading: problemsLoading,
     score,
     questionDone,
     hasNextPage,
     totalPages,
     errorMessage,
-  } = useProblems(currentPage, selectedCategory, categoriesLoading);
+  } = useProblems(currentPage, selectedCategory, searchQuery, categoriesLoading);
 
-  const fetchAllProblems = useCallback(
-    async (category: string) => {
-      let page = 1;
-      let hasNext = true;
-      const allProblems: QuestionWithExpiry[] = [];
-
-      while (hasNext) {
-        let apiUrl = `/api/problems?page=${page}&limit=1000`;
-        if (category && category !== "All") {
-          apiUrl += `&category=${encodeURIComponent(category)}`;
-        }
-
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-          throw new Error("Failed to fetch problems");
-        }
-
-        const { data, pagination }: ApiResponse = await response.json();
-        const sanitizedData = sanitizeProblems(data);
-        allProblems.push(...sanitizedData);
-
-        hasNext = Boolean(pagination?.hasNext);
-        page += 1;
-
-        if (!pagination || data.length === 0) {
-          hasNext = false;
-        }
-      }
-
-      return allProblems;
-    },
-    []
-  );
-
-  useEffect(() => {
-    const query = searchQuery.trim();
-    if (!query) {
-      setSearchResults([]);
-      setSearchLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    const timer = setTimeout(async () => {
-      setSearchLoading(true);
-      try {
-        const allProblems = await fetchAllProblems(selectedCategory);
-        if (cancelled) return;
-        const normalizedQuery = query.toLowerCase();
-        const filtered = allProblems.filter((problem) => {
-          const title = problem.title?.toLowerCase() || "";
-          const description = problem.description?.toLowerCase() || "";
-          const category = problem.category?.toLowerCase() || "";
-          return (
-            title.includes(normalizedQuery) ||
-            description.includes(normalizedQuery) ||
-            category.includes(normalizedQuery)
-          );
-        });
-        setSearchResults(filtered);
-      } catch (error) {
-        if (!cancelled) {
-          console.error("Failed to search problems:", error);
-          setSearchResults([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setSearchLoading(false);
-        }
-      }
-    }, 300);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [fetchAllProblems, searchQuery, selectedCategory]);
+  // The client-side search logic (fetchAllProblems and the associated useEffect)
+  // has been completely removed. The search is now handled by the backend.
 
   const isSearchActive = searchQuery.trim().length > 0;
-  const visibleProblems = isSearchActive ? searchResults : problems;
+  // `visibleProblems` is now just `problems`, as the API returns the filtered list.
+  const visibleProblems = problems;
   const shouldShowNoProblems =
-    visibleProblems.length === 0 && !searchLoading;
+    visibleProblems.length === 0 && !problemsLoading;
 
   // Handle category filter change
   const handleCategoryChange = useCallback((category: string) => {
@@ -692,7 +638,7 @@ const Page: React.FC = () => {
         <SearchBar
           value={searchQuery}
           onChange={setSearchQuery}
-          loading={searchLoading}
+          loading={problemsLoading && isSearchActive} // Show loading spinner in search bar while searching
         />
 
         <DesktopFilter
@@ -716,7 +662,7 @@ const Page: React.FC = () => {
           currentPage={currentPage}
           totalPages={totalPages}
           searchQuery={searchQuery}
-          isSearching={searchLoading}
+          isSearching={problemsLoading && isSearchActive}
         />
       </div>
 
