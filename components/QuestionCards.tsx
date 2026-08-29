@@ -60,4 +60,8 @@ const QuestionCards = ({
   );
 };
 
-export default QuestionCards;
+// Memoize the component to prevent unnecessary re-renders
+const MemoizedQuestionCards = React.memo(QuestionCards);
+MemoizedQuestionCards.displayName = "QuestionCards"; // Assigning a display name for better debugging
+
+export default MemoizedQuestionCards;
