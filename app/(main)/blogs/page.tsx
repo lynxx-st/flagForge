@@ -178,75 +178,80 @@ export default function BlogsPage() {
             {posts.map((post) => {
               const postSlug = post.slug || post.id;
               return (
-              <article
+              <Link
                 key={post.id}
-                className="group relative overflow-hidden rounded-[2rem] border border-white/60 dark:border-white/10 bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_35px_70px_-30px_rgba(15,23,42,0.5)] hover:border-red-200/80 dark:hover:border-red-500/30 h-full flex flex-col"
+                href={`/blogs/${postSlug}`}
+                className="group block"
+                aria-label={`Read more about ${post.title}`}
               >
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.12),rgba(255,255,255,0))] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                {/* Thumbnail Image */}
-                {post.thumbnail && (
-                  <div className="relative h-48 overflow-hidden">
-                    <Image
-                      src={post.thumbnail}
-                      alt={post.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                )}
-                {!post.thumbnail && (
-                  <div className="relative h-48 overflow-hidden bg-[linear-gradient(120deg,rgba(248,113,113,0.15),rgba(251,146,60,0.08),rgba(255,255,255,0))] dark:bg-[linear-gradient(120deg,rgba(248,113,113,0.2),rgba(251,146,60,0.08),rgba(2,6,23,0))]">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.6),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),rgba(2,6,23,0))]" />
-                  </div>
-                )}
-
-                <div className="p-6 flex flex-col flex-1 relative">
-                  <div className="flex items-center justify-between mb-4">
-                    <time className="text-xs uppercase tracking-[0.2em] text-red-500 font-semibold transition-colors duration-300">
-                      {formatDate(post.created)}
-                    </time>
-                    {post.status && (
-                      <span className="px-3 py-1 text-[10px] font-semibold uppercase tracking-widest bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full transition-colors duration-300">
-                        {post.status}
-                      </span>
-                    )}
-                  </div>
-
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors duration-300 line-clamp-2">
-                    <Link href={`/blogs/${postSlug}`}>{post.title}</Link>
-                  </h2>
-
-                  {post.excerpt && (
-                    <p
-                      className={` text-gray-700 dark:text-gray-300 mb-6 line-clamp-3 transition-colors duration-300`}
-                    >
-                      {post.excerpt}
-                    </p>
+                <article
+                  className="relative overflow-hidden rounded-[2rem] border border-white/60 dark:border-white/10 bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_35px_70px_-30px_rgba(15,23,42,0.5)] hover:border-red-200/80 dark:hover:border-red-500/30 h-full flex flex-col"
+                >
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.12),rgba(255,255,255,0))] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  {/* Thumbnail Image */}
+                  {post.thumbnail && (
+                    <div className="relative h-48 overflow-hidden">
+                      <Image
+                        src={post.thumbnail}
+                        alt={post.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+                  {!post.thumbnail && (
+                    <div className="relative h-48 overflow-hidden bg-[linear-gradient(120deg,rgba(248,113,113,0.15),rgba(251,146,60,0.08),rgba(255,255,255,0))] dark:bg-[linear-gradient(120deg,rgba(248,113,113,0.2),rgba(251,146,60,0.08),rgba(2,6,23,0))]">
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.6),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),rgba(2,6,23,0))]" />
+                    </div>
                   )}
 
-                  <div className="mt-auto flex items-center justify-between pt-5 border-t border-gray-100 dark:border-white/5">
-                    <Link
-                      href={`/blogs/${postSlug}`}
-                      className="inline-flex items-center text-red-500 font-semibold hover:text-red-600 transition-colors duration-300"
-                    >
-                      Read more
-                      <svg
-                        className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                  <div className="p-6 flex flex-col flex-1 relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <time className="text-xs uppercase tracking-[0.2em] text-red-500 font-semibold transition-colors duration-300">
+                        {formatDate(post.created)}
+                      </time>
+                      {post.status && (
+                        <span className="px-3 py-1 text-[10px] font-semibold uppercase tracking-widest bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full transition-colors duration-300">
+                          {post.status}
+                        </span>
+                      )}
+                    </div>
+
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors duration-300 line-clamp-2">
+                      {post.title}
+                    </h2>
+
+                    {post.excerpt && (
+                      <p
+                        className={` text-gray-700 dark:text-gray-300 mb-6 line-clamp-3 transition-colors duration-300`}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </Link>
+                        {post.excerpt}
+                      </p>
+                    )}
+
+                    <div className="mt-auto flex items-center justify-between pt-5 border-t border-gray-100 dark:border-white/5">
+                      <div
+                        className="inline-flex items-center text-red-500 font-semibold transition-colors duration-300"
+                      >
+                        Read more
+                        <svg
+                          className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </article>
+                </article>
+              </Link>
             );
             })}
           </div>
