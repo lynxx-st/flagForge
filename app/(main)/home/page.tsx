@@ -92,7 +92,7 @@ const Home = () => {
 
   const fetchLatestRoom = async () => {
     try {
-      const response = await fetch("/api/problems?limit=400");
+      const response = await fetch("/api/problems?limit=1");
 
       if (response.ok) {
         const data = await response.json();
