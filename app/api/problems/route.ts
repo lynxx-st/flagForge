@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import QuestionModel from "@/models/qustionsSchema";
 import { Questions } from "@/interfaces";
 import { HttpStatusCode } from "axios";
+import { FilterQuery } from "mongoose";
 import userSchema from "@/models/userSchema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
@@ -198,6 +199,7 @@ export async function GET(request: NextRequest) {
 
   // Get category filter from query params
   const category = searchParams.get("category");
+  const search = searchParams.get("search");
 
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
@@ -209,13 +211,21 @@ export async function GET(request: NextRequest) {
     await connect();
 
     // Build the base query - exclude flag
-    let baseQuery = {};
+    let baseQuery: FilterQuery<Questions> = {};
 
     // Add category filter if provided and not "All"
     if (category && category !== "All") {
-      baseQuery = { category: category };
+      baseQuery.category = category;
     }
-
+    if (search) {
+      const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const searchRegex = new RegExp(escapedSearch, "i");
+      baseQuery.$or = [
+        { title: { $regex: searchRegex } },
+        { description: { $regex: searchRegex } },
+        { category: { $regex: searchRegex } },
+      ];
+    }
     // Build the query with category filter
     let query = QuestionModel.find(baseQuery).select("-flag");
 
