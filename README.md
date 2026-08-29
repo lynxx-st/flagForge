@@ -58,10 +58,15 @@ npm install
 <p>4. Configure .env</p>
 
 ```
+# ⚠️ SECURITY WARNING: Do not prefix server-side secrets with NEXT_PUBLIC_.
+# Variables starting with NEXT_PUBLIC_ are exposed to the client-side bundle.
+
+# Public (client-side) variables
 NEXT_PUBLIC_STATSIG_CLIENT_KEY=
-NEXT_PUBLIC_STATSIG_CLIENT_KEY=
-NEXT_PUBLIC_ADMIN_EMAIL=
-NEXT_PUBLIC_ADMIN_PASSWORD=
+
+# Private (server-side) variables
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
 NOTION_API_KEY=
 NOTION_DATABASE_ID=
 GOOGLE_CLIENT_SECRET=
