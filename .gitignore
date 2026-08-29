@@ -41,6 +41,7 @@ package-lock.json
 k6-test.js
 
 bun.lockb
+pnpm-lock.yaml
 scripts/delete-problem.js
 
 #test files
