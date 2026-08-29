@@ -60,7 +60,7 @@ const SITEMAP_EXCLUDE = [
   '/problems',
   '/leaderboard',
   '/home',
-  'resources/uploads',
+  '/resources/uploads',
   '/unauthorized',
 ];
 
@@ -197,22 +197,20 @@ module.exports = {
     };
   },
   robotsTxtOptions: {
-    transformRobotsTxt: async (config) => {
-      const disallowRules = SITEMAP_EXCLUDE.map((path) => `Disallow: ${path}`);
-
-      const sitemapRules = [
-        `Sitemap: ${config.siteUrl}/sitemap.xml`,
-        `Sitemap: ${config.siteUrl}/sitemap1.xml`,
-        `Sitemap: ${config.siteUrl}/sitemap.txt`,
-      ];
-
-      const customRules = [
-        'User-agent: *',
-        'Allow: /llms.txt',
-        ...disallowRules,
-      ];
-
-      return [...customRules, '', ...sitemapRules].join('\n');
-    },
+    policies: [
+      {
+        userAgent: '*',
+        allow: '/llms.txt',
+      },
+      ...SITEMAP_EXCLUDE.map((path) => ({
+        userAgent: '*',
+        disallow: path,
+      })),
+    ],
+    // The sitemap URL must be explicitly added here when generateIndexSitemap is false.
+    // The URL is hardcoded to match the 'siteUrl' defined at the top of this file.
+    additionalSitemaps: [
+      'https://flagforge.xyz/sitemap.xml',
+    ],
   },
 };
