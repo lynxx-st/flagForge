@@ -14,6 +14,7 @@ import {
   ChevronDown,
   ExternalLink,
   Lightbulb,
+  Loader2,
   Trophy,
 } from "lucide-react";
 
@@ -1027,8 +1028,15 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   }`}
                 aria-busy={submitting}
               >
-                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Submit Flag</p>
+                <label
+                  htmlFor="flag-input"
+                  className="text-lg font-semibold text-gray-900 dark:text-gray-100 cursor-pointer w-fit"
+                >
+                  Submit Flag
+                </label>
                 <input
+                  id="flag-input"
+                  name="flag"
                   type="text"
                   className={`py-2.5 px-4 block w-full border rounded-full text-base sm:text-lg bg-white/90 dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400 dark:focus:ring-red-400 transition-colors duration-300 shadow-sm ${isSubmissionLocked
                     ? "border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900/60"
@@ -1044,15 +1052,18 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   maxLength={100}
                 />
                 <button
-                  className={`w-full sm:w-[180px] border rounded-full px-4 py-2 text-white shadow-sm transition-colors duration-300 ${isSubmissionLocked
+                  className={`inline-flex items-center justify-center gap-2 w-full sm:w-[180px] border rounded-full px-4 py-2 text-white shadow-sm transition-colors duration-300 ${isSubmissionLocked
                     ? "bg-gray-400 border-gray-400 cursor-not-allowed"
                     : sessionStatus === "unauthenticated"
                       ? "bg-blue-500/90 dark:bg-blue-500 border-blue-500/70 dark:border-blue-600 hover:bg-blue-700 dark:hover:bg-blue-700"
                       : "bg-red-500/90 dark:bg-red-500 border-red-500/70 dark:border-red-600 hover:bg-red-700 dark:hover:bg-red-700"
-                    } ${submitting ? "animate-pulse" : ""}`}
+                    }`}
                   onClick={handleSubmit}
                   disabled={isSubmissionLocked}
                 >
+                  {submitting && (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  )}
                   {submitting
                     ? "Submitting..."
                     : isExpired
