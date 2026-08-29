@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .populate({
         path: "questionId",
-        select: "-flag", // Exclude the flag field for security
+        select: "-flag -hints -uploadedBy", // Exclude sensitive fields for security
         model: QuestionModel,
       });
 
