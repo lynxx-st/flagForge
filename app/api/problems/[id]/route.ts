@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/authOptions";
 import userSchema from "@/models/userSchema";
 import UserQuestionModel from "@/models/userQuestionSchema";
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -205,12 +206,17 @@ export async function POST(
     if (userError) return userError;
 
     const trimmedSubmittedFlag = submittedFlag.trim();
-    const correctFlag = question.flag.trim();
+    const correctFlag = (question.flag || "").trim();
+
+    // Use timing-safe comparison to prevent timing attacks
+    // Hashing ensures that we compare fixed-length buffers, as required by timingSafeEqual
+    const submittedHash = crypto.createHash('sha256').update(trimmedSubmittedFlag).digest();
+    const correctHash = crypto.createHash('sha256').update(correctFlag).digest();
+    const isCorrect = crypto.timingSafeEqual(submittedHash, correctHash);
 
     // Check if user has already solved this question
     const existingSolution = await checkExistingSolution(user._id, id);
     if (existingSolution && isPractice) {
-      const isCorrect = trimmedSubmittedFlag === correctFlag;
       return NextResponse.json(
         {
           message: isCorrect
@@ -230,7 +236,7 @@ export async function POST(
     }
 
     // Check if the submitted flag is correct
-    if (trimmedSubmittedFlag === correctFlag) {
+    if (isCorrect) {
       // Flag is correct - save the solution
       try {
         // Calculate final points considering hint penalties
