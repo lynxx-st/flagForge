@@ -197,22 +197,15 @@ module.exports = {
     };
   },
   robotsTxtOptions: {
-    transformRobotsTxt: async (config) => {
-      const disallowRules = SITEMAP_EXCLUDE.map((path) => `Disallow: ${path}`);
-
-      const sitemapRules = [
-        `Sitemap: ${config.siteUrl}/sitemap.xml`,
-        `Sitemap: ${config.siteUrl}/sitemap1.xml`,
-        `Sitemap: ${config.siteUrl}/sitemap.txt`,
-      ];
-
-      const customRules = [
-        'User-agent: *',
-        'Allow: /llms.txt',
-        ...disallowRules,
-      ];
-
-      return [...customRules, '', ...sitemapRules].join('\n');
-    },
+    policies: [
+      {
+        userAgent: '*',
+        allow: '/llms.txt',
+        disallow: SITEMAP_EXCLUDE,
+      },
+    ],
+    additionalSitemaps: [
+      'https://flagforge.xyz/sitemap.xml',
+    ],
   },
 };
