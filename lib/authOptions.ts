@@ -47,7 +47,11 @@ export const authOptions: AuthOptions = {
           }
           return true;
         } catch (err) {
-          console.error("❌ Sign-in error:", err);
+          if (err instanceof Error) {
+            console.error("Sign-in error:", err.message);
+          } else {
+            console.error("An unknown sign-in error occurred.");
+          }
           return false;
         }
       }
@@ -83,7 +87,11 @@ export const authOptions: AuthOptions = {
             token.role = token.role || "User";
           }
         } catch (err) {
-          console.error("❌ Error fetching user for JWT:", err);
+          if (err instanceof Error) {
+            console.error("JWT user fetch error:", err.message);
+          } else {
+            console.error("An unknown error occurred while fetching user data for JWT.");
+          }
           token.role = token.role || "User";
         }
       }
