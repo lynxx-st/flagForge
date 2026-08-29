@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/authOptions";
 import userSchema from "@/models/userSchema";
 import UserQuestionModel from "@/models/userQuestionSchema";
 import mongoose from "mongoose";
+import { createHash, timingSafeEqual } from "crypto";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -87,6 +88,16 @@ async function checkExistingSolution(userId: string, questionId: string) {
 
 function createErrorResponse(message: string, status: number) {
   return NextResponse.json({ message }, { status });
+}
+
+/**
+ * Compares two strings in constant time to prevent timing attacks.
+ * It hashes both strings with SHA-256 before comparing them with timingSafeEqual.
+ */
+function safeCompare(a: string, b: string): boolean {
+  const hashA = createHash("sha256").update(a).digest();
+  const hashB = createHash("sha256").update(b).digest();
+  return timingSafeEqual(hashA, hashB);
 }
 
 export async function GET(
@@ -210,7 +221,7 @@ export async function POST(
     // Check if user has already solved this question
     const existingSolution = await checkExistingSolution(user._id, id);
     if (existingSolution && isPractice) {
-      const isCorrect = trimmedSubmittedFlag === correctFlag;
+      const isCorrect = safeCompare(trimmedSubmittedFlag, correctFlag);
       return NextResponse.json(
         {
           message: isCorrect
@@ -230,7 +241,7 @@ export async function POST(
     }
 
     // Check if the submitted flag is correct
-    if (trimmedSubmittedFlag === correctFlag) {
+    if (safeCompare(trimmedSubmittedFlag, correctFlag)) {
       // Flag is correct - save the solution
       try {
         // Calculate final points considering hint penalties
